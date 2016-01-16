@@ -1,4 +1,4 @@
-# Tool that helps more easier run apps in AWS Device Farm
+## Tool that helps more easier run apps in AWS Device Farm
 
 ##### Description
 
