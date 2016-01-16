@@ -24,10 +24,6 @@ var (
 )
 
 func main() {
-	*devicePool = "KPI-pool"
-	*project = "kpi"
-	*appPath = "app-debug-unaligned.apk"
-	//*logging = true
 	if *project == "" || *appPath == "" {
 		log.Println("Please specify correct parameters!")
 		os.Exit(1)
