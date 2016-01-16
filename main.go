@@ -24,6 +24,7 @@ var (
 )
 
 func main() {
+	flag.Parse()
 	if *project == "" || *appPath == "" {
 		log.Println("Please specify correct parameters!")
 		os.Exit(1)
