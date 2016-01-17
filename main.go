@@ -203,10 +203,9 @@ func stringEndsWith(original, substring string) bool {
 func getFilename(path string) string {
 	if !strings.Contains(path, "/") {
 		return path
-	} else {
-		pos := strings.LastIndex(path, "/")
-		return string(path[pos+1:])
 	}
+	pos := strings.LastIndex(path, "/")
+	return string(path[pos+1:])
 }
 
 func createConfig() *aws.Config {
