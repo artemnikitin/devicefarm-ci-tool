@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -26,7 +27,10 @@ var (
 func main() {
 	flag.Parse()
 	if *project == "" || *appPath == "" {
-		log.Println("Please specify correct parameters!")
+		fmt.Println("Please specify correct parameters!")
+		fmt.Println("You should specify:")
+		fmt.Println("-project, name of a project in AWS Device Farm")
+		fmt.Println("-app, path to an app you want to run")
 		os.Exit(1)
 	}
 
@@ -149,17 +153,6 @@ func waitForAppProcessed(client *devicefarm.DeviceFarm, arn string) {
 	}
 }
 
-func getJob(client *devicefarm.DeviceFarm, arn string) {
-	params := &devicefarm.GetRunInput{
-		Arn: aws.String("AmazonResourceName"),
-	}
-	resp, err := client.GetRun(params)
-	if err != nil {
-		log.Fatal("Failed to get status of job because of: ", err.Error())
-	}
-	log.Println(resp)
-}
-
 func uploadFile(url string) int {
 	log.Println("Uploading app ...")
 	file, err := os.Open(*appPath)
@@ -186,7 +179,10 @@ func uploadFile(url string) int {
 	result = resp.StatusCode
 	log.Println("Response code:", result)
 	if *logging {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("Failed to get body of response because of: ", err.Error())
+		}
 		log.Println("Response body:", string(body))
 	}
 	return result
