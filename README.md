@@ -8,7 +8,7 @@ This tool helps to run apps in AWS Device Farm easier. You don't need to know AR
 
 Only depends on AWS SDK. Install it via    
 ```
-go get -u github.com/aws/aws-sdk-go/...
+go get github.com/aws/aws-sdk-go/...
 ```
 
 ##### AWS Credentials
