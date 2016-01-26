@@ -147,7 +147,7 @@ func waitForAppProcessed(client *devicefarm.DeviceFarm, arn string) {
 		if status == "FAILED" {
 			log.Fatal("Something went wrong with processing app for tests. Quit.")
 		}
-		if counter == 60 {
+		if counter == 90 {
 			log.Fatal("App is still unprocessed. Quit.")
 		}
 	}
