@@ -6,18 +6,25 @@ This tool helps to run apps in AWS Device Farm easier. You don't need to know AR
 
 ##### Dependency
 
-Only depends on AWS SDK. Install it via    
+Install it via    
 ```
-go get github.com/aws/aws-sdk-go/...
+go get github.com/aws/aws-sdk-go/...    
+go get github.com/artemnikitin/aws-config
 ```
 
 ##### AWS Credentials
 
-Currently assumes that you will have credentials settled as environmental variables.   
+There are two ways to specify credentials:    
+- Set environment variables     
 ```
-export AWS_ACCESS_KEY_ID=<key>
+export AWS_ACCESS_KEY_ID=<key>    
 export AWS_SECRET_ACCESS_KEY=<secret>
+```     
+- Specify user's ARN as a parameter. You can find ARN of your user in IAM user description.     
 ```
+-role=arn:aws:iam::000000000:user/root
+```
+
 ##### Running
 Get it via    
 ``` 
@@ -47,4 +54,3 @@ You can specify parameter ```-log=true``` for logging AWS requests and responses
 1. Ability to upload test apps 
 2. Specify type of upload file
 3. Ability to specify all parameters for a run
-4. Alternative ways to authenticate in AWS

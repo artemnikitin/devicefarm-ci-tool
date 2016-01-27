@@ -11,17 +11,15 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
+	"github.com/artemnikitin/aws-config"
 )
 
 var (
 	project    = flag.String("project", "", "Device Farm project name")
 	appPath    = flag.String("app", "", "Path to an app")
 	devicePool = flag.String("devices", "Top Devices", "Specify list of devices for tests")
-	logging    = flag.Bool("log", false, "Enable logging of HTTP requests to AWS")
-	region     = flag.String("region", "us-west-2", "Set AWS region")
 )
 
 func main() {
@@ -34,7 +32,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	session := session.New(createConfig())
+	config := awsconfig.New()
+	if *config.Region != "us-west-2" {
+		config.WithRegion("us-west-2")
+	}
+	session := session.New(config)
 	client := devicefarm.New(session)
 
 	projectArn := getAccountArn(client)
@@ -178,13 +180,11 @@ func uploadFile(url string) int {
 	var result int
 	result = resp.StatusCode
 	log.Println("Response code:", result)
-	if *logging {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("Failed to get body of response because of: ", err.Error())
-		}
-		log.Println("Response body:", string(body))
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("Failed to get body of response because of: ", err.Error())
 	}
+	log.Println("Response body:", string(body))
 	return result
 }
 
@@ -202,14 +202,4 @@ func getFilename(path string) string {
 	}
 	pos := strings.LastIndex(path, "/")
 	return string(path[pos+1:])
-}
-
-func createConfig() *aws.Config {
-	config := aws.NewConfig()
-	config.WithCredentials(credentials.NewEnvCredentials())
-	config.WithRegion(*region)
-	if *logging {
-		config.WithLogLevel(aws.LogDebugWithHTTPBody)
-	}
-	return config
 }
