@@ -37,7 +37,7 @@ devicefarm-ci-tool -project=name -app=/path/to/my/app.apk
 ```
 
 Additional optional parameters:   
-- ```region``` set S3 region, by default region will be set to ```us-west-2```       
+- ```region``` set S3 region, by default region will be set to ```us-west-2```(At this moment, will be set to ```us-west-2``` in any case, because it's only supported region for the moment)          
 Example:    
 ``` 
 devicefarm-ci-tool -project=name -app=/path/to/my/app.apk -region=region-name 
