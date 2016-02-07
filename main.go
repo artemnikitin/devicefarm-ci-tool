@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/artemnikitin/aws-config"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
-	"github.com/artemnikitin/aws-config"
 )
 
 var (
