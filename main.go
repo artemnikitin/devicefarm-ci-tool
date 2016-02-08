@@ -3,14 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/artemnikitin/aws-config"
+	"github.com/artemnikitin/devicefarm-ci-tool/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
@@ -20,6 +19,7 @@ var (
 	project    = flag.String("project", "", "Device Farm project name")
 	appPath    = flag.String("app", "", "Path to an app")
 	devicePool = flag.String("devices", "Top Devices", "Specify list of devices for tests")
+	configJSON = flag.String("config", "", "Path to JSON config")
 )
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
 	if projectArn != "" {
 		deviceArn := getDevicePoolArn(client, projectArn)
 		appArn, url := createUpload(client, projectArn)
-		code := uploadFile(url)
+		code := utils.UploadFile(*appPath, url)
 		if code == 200 {
 			waitForAppProcessed(client, appArn)
 			_, status := run(client, deviceArn, projectArn, appArn)
@@ -153,39 +153,6 @@ func waitForAppProcessed(client *devicefarm.DeviceFarm, arn string) {
 			log.Fatal("App is still unprocessed. Quit.")
 		}
 	}
-}
-
-func uploadFile(url string) int {
-	log.Println("Uploading app ...")
-	file, err := os.Open(*appPath)
-	if err != nil {
-		log.Fatal("Failed to get file for upload because of: ", err.Error())
-	}
-	info, err := file.Stat()
-	if err != nil {
-		log.Fatal("Failed to get info about file because of: ", err.Error())
-	}
-	client := &http.Client{}
-	request, err := http.NewRequest("PUT", url, file)
-	if err != nil {
-		log.Fatal("Failed to create HTTP request because of: ", err.Error())
-	}
-	request.Header.Add("Content-Type", "application/octet-stream")
-	request.ContentLength = info.Size()
-	resp, err := client.Do(request)
-	if err != nil {
-		log.Fatal("Failed to upload file by S3 link because of: ", err.Error())
-	}
-	defer resp.Body.Close()
-	var result int
-	result = resp.StatusCode
-	log.Println("Response code:", result)
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal("Failed to get body of response because of: ", err.Error())
-	}
-	log.Println("Response body:", string(body))
-	return result
 }
 
 func stringEndsWith(original, substring string) bool {
