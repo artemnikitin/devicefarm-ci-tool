@@ -40,3 +40,12 @@ func UploadFile(path, url string) int {
 	log.Println("Response body:", string(body))
 	return result
 }
+
+// StringEndsWith check that string ends with specified substring
+func StringEndsWith(original, substring string) bool {
+	if len(substring) > len(original) {
+		return false
+	}
+	str := string(original[len(original)-len(substring) : len(original)])
+	return str == substring
+}
