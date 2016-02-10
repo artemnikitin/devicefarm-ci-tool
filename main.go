@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
 	"github.com/artemnikitin/aws-config"
+	"github.com/artemnikitin/devicefarm-ci-tool/config"
 	"github.com/artemnikitin/devicefarm-ci-tool/service"
 	"github.com/artemnikitin/devicefarm-ci-tool/utils"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -17,7 +19,8 @@ var (
 	project    = flag.String("project", "", "Device Farm project name")
 	appPath    = flag.String("app", "", "Path to an app")
 	devicePool = flag.String("devices", "Top Devices", "Specify list of devices for tests")
-	//configJSON = flag.String("config", "", "Path to JSON config")
+	configJSON = flag.String("config", "", "Path to JSON config")
+	wait       = flag.Bool("wait", false, "Wait for run end")
 )
 
 func main() {
@@ -28,6 +31,15 @@ func main() {
 		fmt.Println("-project, name of a project in AWS Device Farm")
 		fmt.Println("-app, path to an app you want to run")
 		os.Exit(1)
+	}
+
+	var configFile config.RunConfig
+	if *configJSON != "" {
+		bytes, err := ioutil.ReadFile(*configJSON)
+		if err != nil {
+			log.Fatal("Can't read config file because of:", err)
+		}
+		configFile = config.Transform(bytes)
 	}
 
 	config := awsconfig.New()
@@ -42,12 +54,25 @@ func main() {
 		deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
 		appArn, url := service.CreateUpload(client, projectArn, *appPath)
 		code := utils.UploadFile(*appPath, url)
-		if code == 200 {
-			service.WaitForAppProcessed(client, appArn)
-			_, status := service.Run(client, deviceArn, projectArn, appArn)
-			if status == "SCHEDULING" {
-				log.Println("Job is started!")
-			}
+		if code != 200 {
+			log.Fatal("Can't upload an app to Device Farm")
+		}
+		service.WaitForAppProcessed(client, appArn)
+		var status string
+		var runArn string
+		if *configJSON != "" {
+			runArn, status = service.RunWithConfig(client, deviceArn, projectArn, appArn, configFile)
+		} else {
+			runArn, status = service.Run(client, deviceArn, projectArn, appArn)
+		}
+		if status == "SCHEDULING" {
+			log.Println("Job is started!")
+		} else {
+			log.Println("Status =", status)
+			log.Fatal("Failed to start a job ...")
+		}
+		if *wait {
+			service.WaitForRunEnds(client, runArn)
 		}
 	}
 }

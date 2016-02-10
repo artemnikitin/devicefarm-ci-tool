@@ -25,5 +25,6 @@ _testmain.go
 .idea
 *.iml
 
+# Test data
 *.json
 *.txt
