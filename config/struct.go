@@ -1,7 +1,20 @@
 package config
 
+import (
+	"encoding/json"
+	"log"
+)
+
 // RunConfig contains serialized representation of run config from JSON file
 type RunConfig struct {
+	RunName string `json:"runName"`
+	Test    struct {
+		Filter          string            `json:"filter"`
+		Parameters      map[string]string `json:"parameters"`
+		TestPackageArn  string            `json:"testPackageArn"`
+		TestPackagePath string            `json:"testPackagePath"`
+		Type            string            `json:"type"`
+	} `json:"test"`
 	AdditionalData struct {
 		AuxiliaryApps        []string `json:"auxiliaryApps"`
 		BillingMethod        string   `json:"billingMethod"`
@@ -14,21 +27,20 @@ type RunConfig struct {
 		} `json:"location"`
 		NetworkProfileArn string `json:"networkProfileArn"`
 		Radios            struct {
-			Bluetooth bool `json:"bluetooth"`
-			Gps       bool `json:"gps"`
-			Nfc       bool `json:"nfc"`
-			Wifi      bool `json:"wifi"`
+			Bluetooth string `json:"bluetooth"`
+			Gps       string `json:"gps"`
+			Nfc       string `json:"nfc"`
+			Wifi      string `json:"wifi"`
 		} `json:"radios"`
 	} `json:"additionalData"`
-	RunName string `json:"runName"`
-	Test    struct {
-		Filter     string `json:"filter"`
-		Parameters struct {
-			String1 string `json:"string1"`
-			String2 string `json:"string2"`
-		} `json:"parameters"`
-		TestPackageArn  string `json:"testPackageArn"`
-		TestPackagePath string `json:"testPackagePath"`
-		Type            string `json:"type"`
-	} `json:"test"`
+}
+
+// Transform unmarshall JSON config file to struct
+func Transform(jsonBytes []byte) RunConfig {
+	result := &RunConfig{}
+	err := json.Unmarshal(jsonBytes, result)
+	if err != nil {
+		log.Fatal("Can't transform JSON to struct because of:", err)
+	}
+	return *result
 }
