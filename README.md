@@ -46,7 +46,6 @@ devicefarm-ci-tool -project=name -app=/path/to/my/app.apk -devices=my-device-poo
 You can specify parameter ```-log=true``` for logging AWS requests and responses.
 
 ##### TODO  
-1. Ability to upload test apps 
-2. Specify type of upload file
-3. Ability to specify all parameters for a run
-4. Alternative ways to authenticate in AWS
+1. Code cleanup
+2. Fix issues
+3. Alternative ways to authenticate in AWS
