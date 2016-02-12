@@ -47,7 +47,7 @@ func StringEndsWith(original, substring string) bool {
 	if len(substring) > len(original) {
 		return false
 	}
-	str := string(original[len(original)-len(substring) : len(original)])
+	str := string(original[len(original)-len(substring):])
 	return str == substring
 }
 
