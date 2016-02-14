@@ -12,7 +12,7 @@ export AWS_ACCESS_KEY_ID=<key>
 export AWS_SECRET_ACCESS_KEY=<secret>
 ```     
 
-##### Running
+##### Run it
 Get it via    
 ``` 
 go get github.com/artemnikitin/devicefarm-ci-tool 
@@ -22,8 +22,9 @@ Required launch parameters:
 ```
 devicefarm-ci-tool -project=name -app=/path/to/my/app.apk
 ```
+By default, "BUILTIN_FUZZ" tests will be run for your app.
 
-Additional optional parameters:   
+##### Optional parameters:   
 - ```region``` set S3 region, by default region will be set to ```us-west-2```(At this moment, will be set to ```us-west-2``` in any case, because it's only supported region for the moment).          
 Example:    
 ``` 
