@@ -10,6 +10,7 @@ import (
 	"github.com/artemnikitin/devicefarm-ci-tool/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
+	"sync"
 )
 
 // GetAccountArn returns project ARN by project name
@@ -143,6 +144,7 @@ func GetUploadStatus(client *devicefarm.DeviceFarm, arn string) string {
 }
 
 func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig, projectArn string) *devicefarm.ScheduleRunInput {
+	var wg sync.WaitGroup
 	result := &devicefarm.ScheduleRunInput{
 		Test: &devicefarm.ScheduleRunTest{},
 		Configuration: &devicefarm.ScheduleRunConfiguration{
@@ -161,16 +163,19 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 		result.Test.Type = aws.String(conf.Test.Type)
 	}
 	if conf.Test.TestPackageArn == "" && conf.Test.TestPackagePath != "" {
-		//TODO: Use goroutine for upload
-		log.Println("Prepare tests for uploading...")
-		t := config.GetUploadTypeForTest(conf.Test.Type)
-		arn, url := CreateUploadWithType(client, projectArn, conf.Test.TestPackagePath, t)
-		httpResponse := utils.UploadFile(conf.Test.TestPackagePath, url)
-		if httpResponse != 200 {
-			log.Fatal("Can't upload test app")
-		}
-		WaitForAppProcessed(client, arn)
-		result.Test.TestPackageArn = aws.String(arn)
+		wg.Add(1)
+		go func() {
+			log.Println("Prepare tests for uploading...")
+			t := config.GetUploadTypeForTest(conf.Test.Type)
+			arn, url := CreateUploadWithType(client, projectArn, conf.Test.TestPackagePath, t)
+			httpResponse := utils.UploadFile(conf.Test.TestPackagePath, url)
+			if httpResponse != 200 {
+				log.Fatal("Can't upload test app")
+			}
+			WaitForAppProcessed(client, arn)
+			result.Test.TestPackageArn = aws.String(arn)
+			wg.Done()
+		}()
 	}
 	if conf.Test.TestPackageArn != "" {
 		result.Test.TestPackageArn = aws.String(conf.Test.TestPackageArn)
@@ -223,16 +228,20 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 		result.Configuration.ExtraDataPackageArn = aws.String(conf.AdditionalData.ExtraDataPackageArn)
 	}
 	if conf.AdditionalData.ExtraDataPackageArn == "" && conf.AdditionalData.ExtraDataPackagePath != "" {
-		//TODO: Use goroutine for upload
-		log.Println("Prepare extra data for uploading...")
-		arn, url := CreateUploadWithType(client, projectArn, conf.AdditionalData.ExtraDataPackagePath, "EXTERNAL_DATA")
-		httpResponse := utils.UploadFile(conf.AdditionalData.ExtraDataPackagePath, url)
-		if httpResponse != 200 {
-			log.Fatal("Can't upload test app")
-		}
-		WaitForAppProcessed(client, arn)
-		result.Configuration.ExtraDataPackageArn = aws.String(arn)
+		wg.Add(1)
+		go func() {
+			log.Println("Prepare extra data for uploading...")
+			arn, url := CreateUploadWithType(client, projectArn, conf.AdditionalData.ExtraDataPackagePath, "EXTERNAL_DATA")
+			httpResponse := utils.UploadFile(conf.AdditionalData.ExtraDataPackagePath, url)
+			if httpResponse != 200 {
+				log.Fatal("Can't upload test app")
+			}
+			WaitForAppProcessed(client, arn)
+			result.Configuration.ExtraDataPackageArn = aws.String(arn)
+			wg.Done()
+		}()
 	}
+	wg.Wait()
 	return result
 }
 
