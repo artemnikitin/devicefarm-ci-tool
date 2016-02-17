@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/artemnikitin/devicefarm-ci-tool/config"
-	"github.com/aws/aws-sdk-go/service/devicefarm"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/artemnikitin/aws-config"
+	"github.com/artemnikitin/devicefarm-ci-tool/config"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
 var client = devicefarm.New(session.New(awsconfig.New()))
@@ -18,7 +18,7 @@ func TestGenerateScheduleRunInputFullConfig(t *testing.T) {
 	deviceFarmConfig := createScheduleRunInput(client, conf, "232323")
 	fmt.Println(deviceFarmConfig.String())
 	if *deviceFarmConfig.Name != "name" {
-		t.Error("Name should be equal 'name'" )
+		t.Error("Name should be equal 'name'")
 	}
 	if *deviceFarmConfig.Test.Filter != "string" {
 		t.Error("test.filter should be 'string'")
@@ -66,5 +66,3 @@ func TestGenerateScheduleRunInputFullConfig(t *testing.T) {
 		t.Error("wifi should be true")
 	}
 }
-
-
