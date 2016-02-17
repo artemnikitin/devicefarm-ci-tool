@@ -4,13 +4,13 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/config"
 	"github.com/artemnikitin/devicefarm-ci-tool/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
-	"sync"
 )
 
 // GetAccountArn returns project ARN by project name
