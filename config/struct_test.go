@@ -1,8 +1,6 @@
 package config
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestTransformSuccess(t *testing.T) {
 	config := createSmallTestData()

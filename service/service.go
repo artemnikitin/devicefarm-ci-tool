@@ -154,6 +154,10 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 				Nfc:       aws.Bool(true),
 				Wifi:      aws.Bool(true),
 			},
+			Location: &devicefarm.Location{
+				Latitude: aws.Float64(47.6204),
+				Longitude: aws.Float64(-122.3491),
+			},
 		},
 	}
 	if conf.RunName != "" {
