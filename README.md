@@ -1,4 +1,4 @@
-## Tool that helps more easier run apps in AWS Device Farm
+## Tool that helps more easier run your apps in AWS Device Farm
 [![Go Report Card](https://goreportcard.com/badge/github.com/artemnikitin/devicefarm-ci-tool)](https://goreportcard.com/report/github.com/artemnikitin/devicefarm-ci-tool)
 ##### Description
 Did you try to run an app in AWS Device Farm via CLI or API? It was easy, right? Right now you can probably say ARN of your project after wake up in the middle of night.    
