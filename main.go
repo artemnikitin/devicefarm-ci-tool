@@ -76,13 +76,6 @@ func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
 		log.Fatal("Can't upload an app to Device Farm")
 	}
 	service.WaitForAppProcessed(client, appArn)
-	/*var status string
-	var runArn string
-	if *configJSON != "" {
-		runArn, status = service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
-	} else {
-		runArn, status = service.Run(client, deviceArn, projectArn, appArn)
-	}*/
 	runArn, status := service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
 	statusCheck(status)
 	if *wait {
