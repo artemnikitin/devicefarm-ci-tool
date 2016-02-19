@@ -11,14 +11,7 @@ import (
 // UploadFile used to upload file by S3 pre-signed URL
 func UploadFile(path, url string) int {
 	log.Println("Uploading app ...")
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal("Failed to get file for upload because of: ", err.Error())
-	}
-	info, err := file.Stat()
-	if err != nil {
-		log.Fatal("Failed to get info about file because of: ", err.Error())
-	}
+	file, info := prepareFile(path)
 	client := &http.Client{}
 	request, err := http.NewRequest("PUT", url, file)
 	if err != nil {
@@ -31,13 +24,29 @@ func UploadFile(path, url string) int {
 		log.Fatal("Failed to upload file by S3 link because of: ", err.Error())
 	}
 	defer resp.Body.Close()
-	var result int
-	result = resp.StatusCode
-	log.Println("Response code:", result)
-	body, err := ioutil.ReadAll(resp.Body)
+	status := saveFile(resp)
+	return status
+}
+
+func prepareFile(path string) (*os.File, os.FileInfo) {
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal("Failed to get file for upload because of: ", err.Error())
+	}
+	info, err := file.Stat()
+	if err != nil {
+		log.Fatal("Failed to get info about file because of: ", err.Error())
+	}
+	return file, info
+}
+
+func saveFile(response http.Response) int {
+	result := response.StatusCode
+	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal("Failed to get body of response because of: ", err.Error())
 	}
+	log.Println("Response code:", result)
 	log.Println("Response body:", string(body))
 	return result
 }
