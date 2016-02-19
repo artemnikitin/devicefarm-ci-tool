@@ -32,7 +32,12 @@ func main() {
 		fmt.Println("-app, path to an app you want to run")
 		os.Exit(1)
 	}
+	configFile := getConfig()
+	client := getAWSClient()
+	runJob(client, configFile)
+}
 
+func getConfig() config.RunConfig {
 	var configFile config.RunConfig
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
@@ -41,14 +46,28 @@ func main() {
 		}
 		configFile = config.Transform(bytes)
 	}
+	return configFile
+}
 
+func getAWSClient() devicefarm.DeviceFarm {
 	config := awsconfig.New()
 	if *config.Region != "us-west-2" {
 		config.WithRegion("us-west-2")
 	}
 	session := session.New(config)
-	client := devicefarm.New(session)
+	return devicefarm.New(session)
+}
 
+func statusCheck(status string) {
+	if status == "SCHEDULING" {
+		log.Println("Job is started!")
+	} else {
+		log.Println("Status =", status)
+		log.Fatal("Failed to start a job ...")
+	}
+}
+
+func runJob(client devicefarm.DeviceFarm, config config.RunConfig) {
 	projectArn := service.GetAccountArn(client, *project)
 	if projectArn != "" {
 		deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
@@ -61,16 +80,11 @@ func main() {
 		var status string
 		var runArn string
 		if *configJSON != "" {
-			runArn, status = service.RunWithConfig(client, deviceArn, projectArn, appArn, configFile)
+			runArn, status = service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
 		} else {
 			runArn, status = service.Run(client, deviceArn, projectArn, appArn)
 		}
-		if status == "SCHEDULING" {
-			log.Println("Job is started!")
-		} else {
-			log.Println("Status =", status)
-			log.Fatal("Failed to start a job ...")
-		}
+		statusCheck(status)
 		if *wait {
 			service.WaitForRunEnds(client, runArn)
 		}
