@@ -40,7 +40,7 @@ func prepareFile(path string) (*os.File, os.FileInfo) {
 	return file, info
 }
 
-func saveFile(response http.Response) int {
+func saveFile(response *http.Response) int {
 	result := response.StatusCode
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {

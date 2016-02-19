@@ -38,18 +38,18 @@ func main() {
 }
 
 func getConfig() config.RunConfig {
-	var configFile config.RunConfig
+	configFile := &config.RunConfig{}
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		if err != nil {
 			log.Fatal("Can't read config file because of:", err)
 		}
-		configFile = config.Transform(bytes)
+		*configFile = config.Transform(bytes)
 	}
-	return configFile
+	return *configFile
 }
 
-func getAWSClient() devicefarm.DeviceFarm {
+func getAWSClient() *devicefarm.DeviceFarm {
 	config := awsconfig.New()
 	if *config.Region != "us-west-2" {
 		config.WithRegion("us-west-2")
@@ -67,26 +67,25 @@ func statusCheck(status string) {
 	}
 }
 
-func runJob(client devicefarm.DeviceFarm, config config.RunConfig) {
+func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
 	projectArn := service.GetAccountArn(client, *project)
-	if projectArn != "" {
-		deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
-		appArn, url := service.CreateUpload(client, projectArn, *appPath)
-		code := utils.UploadFile(*appPath, url)
-		if code != 200 {
-			log.Fatal("Can't upload an app to Device Farm")
-		}
-		service.WaitForAppProcessed(client, appArn)
-		var status string
-		var runArn string
-		if *configJSON != "" {
-			runArn, status = service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
-		} else {
-			runArn, status = service.Run(client, deviceArn, projectArn, appArn)
-		}
-		statusCheck(status)
-		if *wait {
-			service.WaitForRunEnds(client, runArn)
-		}
+	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
+	appArn, url := service.CreateUpload(client, projectArn, *appPath)
+	code := utils.UploadFile(*appPath, url)
+	if code != 200 {
+		log.Fatal("Can't upload an app to Device Farm")
+	}
+	service.WaitForAppProcessed(client, appArn)
+	/*var status string
+	var runArn string
+	if *configJSON != "" {
+		runArn, status = service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
+	} else {
+		runArn, status = service.Run(client, deviceArn, projectArn, appArn)
+	}*/
+	runArn, status := service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
+	statusCheck(status)
+	if *wait {
+		service.WaitForRunEnds(client, runArn)
 	}
 }
