@@ -1,7 +1,10 @@
+
+
 dependencies:
   pre:
     - echo "Start collecting dependencies ..."
   override:
+    - go get -u github.com/artemnikitin/devicefarm-ci-tool
     - ls -an
 
 test:
