@@ -36,7 +36,7 @@ func main() {
 }
 
 func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
-	projectArn := service.GetAccountArn(client, *project)
+	projectArn := service.GetProjectArn(client, *project)
 	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
 	appArn, url := service.CreateUpload(client, projectArn, *appPath)
 	code := tools.UploadFile(*appPath, url)

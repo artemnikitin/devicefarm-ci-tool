@@ -10,8 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
-// GetAccountArn returns project ARN by project name
-func GetAccountArn(client *devicefarm.DeviceFarm, project string) string {
+// GetProjectArn returns project ARN by project name
+func GetProjectArn(client *devicefarm.DeviceFarm, project string) string {
 	var arn string
 	params := &devicefarm.ListProjectsInput{}
 	resp, err := client.ListProjects(params)

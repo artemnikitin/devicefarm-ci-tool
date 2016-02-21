@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"os"
 	"testing"
 
 	"github.com/artemnikitin/aws-config"
@@ -9,8 +9,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
-var testClient = devicefarm.New(session.New(awsconfig.New()))
+var (
+	project = os.Getenv("AWS_DEVICE_FARM_PROJECT")
+	testClient = devicefarm.New(session.New(awsconfig.New().WithRegion("us-west-2")))
+)
 
-func TestA(t *testing.T) {
-	fmt.Println(testClient.APIVersion)
+func TestGetProjectArnForExistedProject(t *testing.T) {
+	result := GetProjectArn(testClient, project)
+	if len(result) == 0 {
+		t.Error("For existed project ARN should be returned")
+	}
 }
