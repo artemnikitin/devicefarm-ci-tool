@@ -10,7 +10,7 @@ import (
 	"github.com/artemnikitin/aws-config"
 	"github.com/artemnikitin/devicefarm-ci-tool/config"
 	"github.com/artemnikitin/devicefarm-ci-tool/service"
-	"github.com/artemnikitin/devicefarm-ci-tool/utils"
+	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
@@ -32,9 +32,23 @@ func main() {
 		fmt.Println("-app, path to an app you want to run")
 		os.Exit(1)
 	}
-	configFile := getConfig()
-	client := getAWSClient()
-	runJob(client, configFile)
+	runJob(getAWSClient(), getConfig())
+}
+
+func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
+	projectArn := service.GetAccountArn(client, *project)
+	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
+	appArn, url := service.CreateUpload(client, projectArn, *appPath)
+	code := tools.UploadFile(*appPath, url)
+	if code != 200 {
+		log.Fatal("Can't upload an app to Device Farm")
+	}
+	service.WaitForAppProcessed(client, appArn)
+	runArn, status := service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
+	statusCheck(status)
+	if *wait {
+		service.WaitForRunEnds(client, runArn)
+	}
 }
 
 func getConfig() config.RunConfig {
@@ -64,21 +78,5 @@ func statusCheck(status string) {
 	} else {
 		log.Println("Status =", status)
 		log.Fatal("Failed to start a job ...")
-	}
-}
-
-func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
-	projectArn := service.GetAccountArn(client, *project)
-	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
-	appArn, url := service.CreateUpload(client, projectArn, *appPath)
-	code := utils.UploadFile(*appPath, url)
-	if code != 200 {
-		log.Fatal("Can't upload an app to Device Farm")
-	}
-	service.WaitForAppProcessed(client, appArn)
-	runArn, status := service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
-	statusCheck(status)
-	if *wait {
-		service.WaitForRunEnds(client, runArn)
 	}
 }

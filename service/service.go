@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/config"
-	"github.com/artemnikitin/devicefarm-ci-tool/utils"
+	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
@@ -33,7 +33,7 @@ func GetAccountArn(client *devicefarm.DeviceFarm, project string) string {
 // CreateUpload creates pre-signed S3 URL for upload
 func CreateUpload(client *devicefarm.DeviceFarm, arn, appPath string) (string, string) {
 	var appType string
-	if utils.StringEndsWith(appPath, ".apk") {
+	if tools.StringEndsWith(appPath, ".apk") {
 		appType = "ANDROID_APP"
 	} else {
 		appType = "IOS_APP"
@@ -48,7 +48,7 @@ func CreateUploadWithType(client *devicefarm.DeviceFarm, arn, appPath, uploadTyp
 
 func internalCreateUpload(client *devicefarm.DeviceFarm, arn, appPath, appType string) (string, string) {
 	params := &devicefarm.CreateUploadInput{
-		Name:        aws.String(utils.GetFilename(appPath)),
+		Name:        aws.String(tools.GetFilename(appPath)),
 		ProjectArn:  aws.String(arn),
 		Type:        aws.String(appType),
 		ContentType: aws.String("application/octet-stream"),
@@ -172,7 +172,7 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 			log.Println("Prepare tests for uploading...")
 			t := config.GetUploadTypeForTest(conf.Test.Type)
 			arn, url := CreateUploadWithType(client, projectArn, conf.Test.TestPackagePath, t)
-			httpResponse := utils.UploadFile(conf.Test.TestPackagePath, url)
+			httpResponse := tools.UploadFile(conf.Test.TestPackagePath, url)
 			if httpResponse != 200 {
 				log.Fatal("Can't upload test app")
 			}
@@ -236,7 +236,7 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 		go func() {
 			log.Println("Prepare extra data for uploading...")
 			arn, url := CreateUploadWithType(client, projectArn, conf.AdditionalData.ExtraDataPackagePath, "EXTERNAL_DATA")
-			httpResponse := utils.UploadFile(conf.AdditionalData.ExtraDataPackagePath, url)
+			httpResponse := tools.UploadFile(conf.AdditionalData.ExtraDataPackagePath, url)
 			if httpResponse != 200 {
 				log.Fatal("Can't upload test app")
 			}
