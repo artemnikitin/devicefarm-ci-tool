@@ -1,0 +1,11 @@
+dependencies:
+  pre:
+    - echo "Start collecting dependencies ..."
+  override:
+    - ls -an
+
+test:
+  pre:
+    - echo "Start tests ..."
+  override:
+    - go test $(go list ./... | grep -v /vendor/)
