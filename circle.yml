@@ -1,16 +1,10 @@
-
-
 dependencies:
-  pre:
-    - echo "Start collecting dependencies ..."
   override:
+    - echo "Start collecting dependencies ..."
     - go get -u -v github.com/artemnikitin/devicefarm-ci-tool
     - go build -v
-    - pwd
-    - ls -an
 
 test:
-  pre:
-    - echo "Start tests ..."
   override:
+    - echo "Start tests ..."
     - go test $(go list ./... | grep -v /vendor/)
