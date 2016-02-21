@@ -12,32 +12,9 @@ import (
 
 var client = devicefarm.New(session.New(awsconfig.New()))
 
-func TestGenerateScheduleRunInputFullConfig(t *testing.T) {
+func TestGenerateScheduleRunInputWithConfigurationBlock(t *testing.T) {
 	input := []byte(`{"runName":"name","test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}},"additionalData":{"extraDataPackageArn":"string","networkProfileArn":"string","locale":"string","location":{"latitude":1.222,"longitude":1.222},"radios":{"wifi":"","bluetooth":"true","nfc":"true","gps":"false"},"auxiliaryApps":["string1","string2"],"billingMethod":"METERED"}}`)
-	conf := config.Transform(input)
-	deviceFarmConfig := createScheduleRunInput(client, conf, "232323")
-	fmt.Println(deviceFarmConfig.String())
-	if *deviceFarmConfig.Name != "name" {
-		t.Error("Name should be equal 'name'")
-	}
-	if *deviceFarmConfig.Test.Filter != "string" {
-		t.Error("test.filter should be 'string'")
-	}
-	if *deviceFarmConfig.Test.Type != "string" {
-		t.Error("test.type should be 'string'")
-	}
-	if *deviceFarmConfig.Test.TestPackageArn != "string" {
-		t.Error("test.packageARN should be 'string'")
-	}
-	if len(deviceFarmConfig.Test.Parameters) != 2 {
-		t.Error("Size of test.parameters should be 2")
-	}
-	if *deviceFarmConfig.Test.Parameters["key1"] != "value" {
-		t.Error("test.parameters should be 'value'")
-	}
-	if *deviceFarmConfig.Test.Parameters["key2"] != "value" {
-		t.Error("test.parameters should be 'value'")
-	}
+	deviceFarmConfig := create(input)
 	if *deviceFarmConfig.Configuration.BillingMethod != "METERED" {
 		t.Error("billing method should be 'METERED'")
 	}
@@ -65,4 +42,47 @@ func TestGenerateScheduleRunInputFullConfig(t *testing.T) {
 	if !*deviceFarmConfig.Configuration.Radios.Wifi {
 		t.Error("wifi should be true")
 	}
+}
+
+func TestGenerateScheduleRunInputFromEmptyConfig(t *testing.T) {
+	input := []byte(`{"runName":"name"}`)
+	conf := create(input)
+	if *conf.Name != "name" {
+		t.Error("Name should be equal 'name'")
+	}
+	if !*conf.Configuration.Radios.Bluetooth {
+		t.Error("Bluetooth should be true by default")
+	}
+	if *conf.Configuration.Location.Latitude != 47.6204 {
+		t.Error("Latitude should be 47.6204 by default")
+	}
+}
+
+func TestGenerateScheduleRunInputWithTestBlock(t *testing.T) {
+	input := []byte(`{"test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}}}`)
+	conf := create(input)
+	if *conf.Test.Filter != "string" {
+		t.Error("test.filter should be 'string'")
+	}
+	if *conf.Test.Type != "string" {
+		t.Error("test.type should be 'string'")
+	}
+	if *conf.Test.TestPackageArn != "string" {
+		t.Error("test.packageARN should be 'string'")
+	}
+	if len(conf.Test.Parameters) != 2 {
+		t.Error("Size of test.parameters should be 2")
+	}
+	if *conf.Test.Parameters["key1"] != "value" {
+		t.Error("test.parameters should be 'value'")
+	}
+	if *conf.Test.Parameters["key2"] != "value" {
+		t.Error("test.parameters should be 'value'")
+	}
+}
+
+func create(bytes []byte) *devicefarm.ScheduleRunInput {
+	deviceFarmConfig := createScheduleRunInput(client, config.Transform(bytes), "232323")
+	fmt.Println(deviceFarmConfig.String())
+	return deviceFarmConfig
 }
