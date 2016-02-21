@@ -23,9 +23,7 @@ func UploadFile(path, url string) int {
 	if err != nil {
 		log.Fatal("Failed to upload file by S3 link because of: ", err.Error())
 	}
-	defer resp.Body.Close()
-	status := saveFile(resp)
-	return status
+	return getStatusOfUpload(resp)
 }
 
 func prepareFile(path string) (*os.File, os.FileInfo) {
@@ -40,7 +38,7 @@ func prepareFile(path string) (*os.File, os.FileInfo) {
 	return file, info
 }
 
-func saveFile(response *http.Response) int {
+func getStatusOfUpload(response *http.Response) int {
 	result := response.StatusCode
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -48,6 +46,7 @@ func saveFile(response *http.Response) int {
 	}
 	log.Println("Response code:", result)
 	log.Println("Response body:", string(body))
+	defer response.Body.Close()
 	return result
 }
 
