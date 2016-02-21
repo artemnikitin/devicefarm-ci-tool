@@ -1,0 +1,11 @@
+machine:
+  environment:
+    GO15VENDOREXPERIMENT: 1
+
+dependencies:
+  override:
+    - echo "Collecting dependencies ..."
+
+test:
+  override:
+    - go test $(go list ./... | grep -v /vendor/)
