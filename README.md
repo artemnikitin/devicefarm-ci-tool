@@ -90,6 +90,5 @@ Example of config:
 ```
 
 ##### TODO  
-1. Code cleanup
-2. Fix issues
-3. Alternative ways to authenticate in AWS
+1. Fix issues
+2. Alternative ways to authenticate in AWS
