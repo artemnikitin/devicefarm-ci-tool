@@ -9,6 +9,7 @@ import (
 
 	"github.com/artemnikitin/aws-config"
 	"github.com/artemnikitin/devicefarm-ci-tool/config"
+	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 	"github.com/artemnikitin/devicefarm-ci-tool/service"
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -55,9 +56,7 @@ func getConfig() config.RunConfig {
 	configFile := &config.RunConfig{}
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
-		if err != nil {
-			log.Fatal("Can't read config file because of:", err)
-		}
+		errors.Validate(err, "Can't read config file")
 		*configFile = config.Transform(bytes)
 	}
 	return *configFile

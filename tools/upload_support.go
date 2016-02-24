@@ -5,41 +5,33 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 )
 
 func sendRequest(url string, file *os.File, info os.FileInfo) *http.Response {
 	client := &http.Client{}
 	request, err := http.NewRequest("PUT", url, file)
-	if err != nil {
-		log.Fatal("Failed to create HTTP request because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to create HTTP request")
 	request.Header.Add("Content-Type", "application/octet-stream")
 	request.ContentLength = info.Size()
 	resp, err := client.Do(request)
-	if err != nil {
-		log.Fatal("Failed to upload file by S3 link because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to upload file by S3 link")
 	return resp
 }
 
 func prepareFile(path string) (*os.File, os.FileInfo) {
 	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal("Failed to get file for upload because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to get file for upload")
 	info, err := file.Stat()
-	if err != nil {
-		log.Fatal("Failed to get info about file because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to get info about file")
 	return file, info
 }
 
 func getStatusOfUpload(response *http.Response) int {
 	result := response.StatusCode
 	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal("Failed to get body of response because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to get body of response")
 	log.Println("Response code:", result)
 	log.Println("Response body:", string(body))
 	defer response.Body.Close()

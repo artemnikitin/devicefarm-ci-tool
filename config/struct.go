@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 	"log"
+
+	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 )
 
 var m = map[string]string{
@@ -52,9 +54,7 @@ type RunConfig struct {
 func Transform(jsonBytes []byte) RunConfig {
 	result := &RunConfig{}
 	err := json.Unmarshal(jsonBytes, result)
-	if err != nil {
-		log.Fatal("Can't transform JSON to struct because of:", err)
-	}
+	errors.Validate(err, "Can't read config file")
 	return *result
 }
 

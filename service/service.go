@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/config"
+	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
@@ -15,9 +16,7 @@ func GetProjectArn(client *devicefarm.DeviceFarm, project string) string {
 	var arn string
 	params := &devicefarm.ListProjectsInput{}
 	resp, err := client.ListProjects(params)
-	if err != nil {
-		log.Fatal("Failed to get list of projects for account because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to get list of projects for account")
 	for _, entry := range resp.Projects {
 		if *entry.Name == project {
 			arn = *entry.Arn
@@ -51,9 +50,7 @@ func internalCreateUpload(client *devicefarm.DeviceFarm, arn, appPath, appType s
 		ContentType: aws.String("application/octet-stream"),
 	}
 	resp, err := client.CreateUpload(params)
-	if err != nil {
-		log.Fatal("Failed to upload an app because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to upload an app")
 	log.Println("Upload ARN:", *resp.Upload.Arn)
 	log.Println("Upload URL:", *resp.Upload.Url)
 	return *resp.Upload.Arn, *resp.Upload.Url
@@ -66,9 +63,7 @@ func GetDevicePoolArn(client *devicefarm.DeviceFarm, projectArn, devicePool stri
 		Arn: aws.String(projectArn),
 	}
 	resp, err := client.ListDevicePools(params)
-	if err != nil {
-		log.Fatal("Failed to get list of device pools because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to get list of device pools")
 	for _, pool := range resp.DevicePools {
 		if *pool.Name == devicePool {
 			arn = *pool.Arn
@@ -103,9 +98,7 @@ func RunWithConfig(client *devicefarm.DeviceFarm, devicePoolArn, projectArn, app
 func runWith(client *devicefarm.DeviceFarm, input *devicefarm.ScheduleRunInput) (string, string) {
 	log.Println("Starting job ...")
 	resp, err := client.ScheduleRun(input)
-	if err != nil {
-		log.Fatal("Failed to run tests because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to run tests")
 	log.Println("Run ARN:", *resp.Run.Arn)
 	return *resp.Run.Arn, *resp.Run.Status
 }
@@ -133,9 +126,7 @@ func GetUploadStatus(client *devicefarm.DeviceFarm, arn string) string {
 		Arn: aws.String(arn),
 	}
 	resp, err := client.GetUpload(params)
-	if err != nil {
-		log.Fatal("Failed to get status of upload because of: ", err.Error())
-	}
+	errors.Validate(err, "Failed to get status of upload")
 	log.Println("Status of upload:", *resp.Upload.Status)
 	return *resp.Upload.Status
 }
@@ -161,8 +152,6 @@ func GetStatusOfRun(client *devicefarm.DeviceFarm, arn string) (string, string) 
 		Arn: aws.String(arn),
 	}
 	resp, err := client.GetRun(params)
-	if err != nil {
-		log.Fatal("Can't get status of run because of:", err)
-	}
+	errors.Validate(err, "Can't get status of run")
 	return *resp.Run.Status, *resp.Run.Result
 }
