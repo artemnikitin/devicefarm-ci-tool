@@ -15,6 +15,7 @@ import (
 func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig, projectArn string) *devicefarm.ScheduleRunInput {
 	var wg sync.WaitGroup
 	result := &devicefarm.ScheduleRunInput{
+		ProjectArn: aws.String(projectArn),
 		Test: &devicefarm.ScheduleRunTest{},
 		Configuration: &devicefarm.ScheduleRunConfiguration{
 			Radios: &devicefarm.Radios{

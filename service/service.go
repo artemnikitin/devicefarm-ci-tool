@@ -73,31 +73,13 @@ func GetDevicePoolArn(client *devicefarm.DeviceFarm, projectArn, devicePool stri
 	return arn
 }
 
-// Run creates test run with default parameters
-func Run(client *devicefarm.DeviceFarm, devicePoolArn, projectArn, appArn string) (string, string) {
-	params := &devicefarm.ScheduleRunInput{
-		DevicePoolArn: aws.String(devicePoolArn),
-		ProjectArn:    aws.String(projectArn),
-		Test: &devicefarm.ScheduleRunTest{
-			Type: aws.String("BUILTIN_FUZZ"),
-		},
-		AppArn: aws.String(appArn),
-	}
-	return runWith(client, params)
-}
-
 // RunWithConfig will schedule run with setup from JSON config
 func RunWithConfig(client *devicefarm.DeviceFarm, devicePoolArn, projectArn, appArn string, conf config.RunConfig) (string, string) {
 	params := createScheduleRunInput(client, conf, projectArn)
 	params.DevicePoolArn = aws.String(devicePoolArn)
 	params.AppArn = aws.String(appArn)
-	params.ProjectArn = aws.String(projectArn)
-	return runWith(client, params)
-}
-
-func runWith(client *devicefarm.DeviceFarm, input *devicefarm.ScheduleRunInput) (string, string) {
 	log.Println("Starting job ...")
-	resp, err := client.ScheduleRun(input)
+	resp, err := client.ScheduleRun(params)
 	errors.Validate(err, "Failed to run tests")
 	log.Println("Run ARN:", *resp.Run.Arn)
 	return *resp.Run.Arn, *resp.Run.Status
