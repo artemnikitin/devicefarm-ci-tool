@@ -53,7 +53,7 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 
 	processConfigurationBlock(conf, result)
 	if conf.AdditionalData.ExtraDataPackageArn == "" && conf.AdditionalData.ExtraDataPackagePath != "" {
-		wg.Add(2)
+		wg.Add(1)
 		go func() {
 			log.Println("Prepare extra data for uploading...")
 			arn, url := CreateUploadWithType(client, projectArn, conf.AdditionalData.ExtraDataPackagePath, "EXTERNAL_DATA")
