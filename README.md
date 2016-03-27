@@ -52,7 +52,7 @@ You can specify parameter ```-log=true``` for logging AWS requests and responses
 All parameters in the configuration file is optional. For reference you can look at http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html  
 
 Example of config:
-```json
+```xml
 {
    "runName":"name",
    "test":{
