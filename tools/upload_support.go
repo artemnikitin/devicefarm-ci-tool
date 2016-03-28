@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -34,6 +35,10 @@ func getStatusOfUpload(response *http.Response) int {
 	errors.Validate(err, "Failed to get body of response")
 	log.Println("Response code:", result)
 	log.Println("Response body:", string(body))
-	defer response.Body.Close()
+	defer func() {
+		// Drain and close the body to let the Transport reuse the connection
+		io.Copy(ioutil.Discard, response.Body)
+		response.Body.Close()
+	}()
 	return result
 }
