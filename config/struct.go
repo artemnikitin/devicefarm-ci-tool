@@ -7,7 +7,7 @@ import (
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 )
 
-const m = map[string]string{
+var m = map[string]string{
 	"APPIUM_JAVA_JUNIT":      "APPIUM_JAVA_JUNIT_TEST_PACKAGE",
 	"APPIUM_JAVA_TESTNG":     "APPIUM_JAVA_TESTNG_TEST_PACKAGE",
 	"APPIUM_PYTHON":          "APPIUM_PYTHON_TEST_PACKAGE",
