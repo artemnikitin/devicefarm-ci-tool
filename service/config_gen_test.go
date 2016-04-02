@@ -82,7 +82,8 @@ func TestGenerateScheduleRunInputWithTestBlock(t *testing.T) {
 }
 
 func create(bytes []byte) *devicefarm.ScheduleRunInput {
-	deviceFarmConfig := createScheduleRunInput(client, config.Transform(bytes), "232323")
+	cf := config.Transform(bytes)
+	deviceFarmConfig := createScheduleRunInput(client, &cf, "232323")
 	fmt.Println(deviceFarmConfig.String())
 	return deviceFarmConfig
 }
