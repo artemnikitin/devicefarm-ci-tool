@@ -36,7 +36,7 @@ func main() {
 	runJob(getAWSClient(), getConfig())
 }
 
-func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
+func runJob(client *devicefarm.DeviceFarm, config *config.RunConfig) {
 	projectArn := service.GetProjectArn(client, *project)
 	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
 	appArn, url := service.CreateUpload(client, projectArn, *appPath)
@@ -52,14 +52,14 @@ func runJob(client *devicefarm.DeviceFarm, config config.RunConfig) {
 	}
 }
 
-func getConfig() config.RunConfig {
+func getConfig() *config.RunConfig {
 	configFile := &config.RunConfig{}
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		errors.Validate(err, "Can't read config file")
 		*configFile = config.Transform(bytes)
 	}
-	return *configFile
+	return configFile
 }
 
 func getAWSClient() *devicefarm.DeviceFarm {

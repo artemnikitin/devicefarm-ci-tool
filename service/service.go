@@ -74,7 +74,7 @@ func GetDevicePoolArn(client *devicefarm.DeviceFarm, projectArn, devicePool stri
 }
 
 // RunWithConfig will schedule run with setup from JSON config
-func RunWithConfig(client *devicefarm.DeviceFarm, devicePoolArn, projectArn, appArn string, conf config.RunConfig) (string, string) {
+func RunWithConfig(client *devicefarm.DeviceFarm, devicePoolArn, projectArn, appArn string, conf *config.RunConfig) (string, string) {
 	params := createScheduleRunInput(client, conf, projectArn)
 	params.DevicePoolArn = aws.String(devicePoolArn)
 	params.AppArn = aws.String(appArn)

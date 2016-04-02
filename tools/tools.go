@@ -9,7 +9,7 @@ import (
 func UploadFile(path, url string) int {
 	log.Println("Uploading file from path:", path)
 	file, info := prepareFile(path)
-	resp := sendRequest(url, file, info)
+	resp := sendRequest(url, &file, info)
 	return getStatusOfUpload(resp)
 }
 

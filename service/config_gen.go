@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
-func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig, projectArn string) *devicefarm.ScheduleRunInput {
+func createScheduleRunInput(client *devicefarm.DeviceFarm, conf *config.RunConfig, projectArn string) *devicefarm.ScheduleRunInput {
 	var wg sync.WaitGroup
 	result := &devicefarm.ScheduleRunInput{
 		ProjectArn: aws.String(projectArn),
@@ -70,7 +70,7 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf config.RunConfig
 	return result
 }
 
-func processTestBlock(conf config.RunConfig, sri *devicefarm.ScheduleRunInput) {
+func processTestBlock(conf *config.RunConfig, sri *devicefarm.ScheduleRunInput) {
 	if conf.Test.Type != "" {
 		sri.Test.Type = aws.String(conf.Test.Type)
 	}
@@ -90,7 +90,7 @@ func processTestBlock(conf config.RunConfig, sri *devicefarm.ScheduleRunInput) {
 	}
 }
 
-func processConfigurationBlock(conf config.RunConfig, sri *devicefarm.ScheduleRunInput) {
+func processConfigurationBlock(conf *config.RunConfig, sri *devicefarm.ScheduleRunInput) {
 	if conf.AdditionalData.BillingMethod != "" {
 		sri.Configuration.BillingMethod = aws.String(conf.AdditionalData.BillingMethod)
 	}
