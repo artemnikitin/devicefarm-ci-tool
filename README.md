@@ -17,6 +17,8 @@ Get it via
 ``` 
 go get github.com/artemnikitin/devicefarm-ci-tool 
 ``` 
+
+Or you can just download binaries for Windows, Mac OSX or Linux from [latest release](https://github.com/artemnikitin/devicefarm-ci-tool/releases)   
    
 Required launch parameters:   
 ```
