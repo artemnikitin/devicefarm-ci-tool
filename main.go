@@ -38,6 +38,9 @@ func main() {
 
 func runJob(client *devicefarm.DeviceFarm, config *config.RunConfig) {
 	projectArn := service.GetProjectArn(client, *project)
+	if projectArn == "" {
+		log.Fatal("Application finished, because it can't retrieve project ARN")
+	}
 	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
 	appArn, url := service.CreateUpload(client, projectArn, *appPath)
 	code := tools.UploadFile(*appPath, url)
