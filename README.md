@@ -4,6 +4,8 @@
 Did you try to run an app in AWS Device Farm via CLI or API? It was easy, right? Right now you can probably say ARN of your project after wake up in the middle of night.    
 This tool helps to run apps in AWS Device Farm easier. You don't need to know ARN, because it's for machine, not for humans.
 
+It's not a replacement for existing AWS CLI tools. It was created for a very specific purpose, to run tests in CI without a lot of configuration that required for existing solutions. It based on an assumption that all setup is already done. It means, that if you will specify an unexisted project name, then the tool wouldn't create it.   
+
 ##### AWS Credentials
 
 Set environment variables     
