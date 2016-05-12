@@ -16,7 +16,7 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf *config.RunConfi
 	var wg sync.WaitGroup
 	result := &devicefarm.ScheduleRunInput{
 		ProjectArn: aws.String(projectArn),
-		Test: &devicefarm.ScheduleRunTest{},
+		Test:       &devicefarm.ScheduleRunTest{},
 		Configuration: &devicefarm.ScheduleRunConfiguration{
 			Radios: &devicefarm.Radios{
 				Bluetooth: aws.Bool(true),
