@@ -23,32 +23,32 @@ var m = map[string]string{
 
 // RunConfig contains serialized representation of run config from JSON file
 type RunConfig struct {
-	RunName string `json:"runName"`
+	RunName string `json:"runName,omitempty"`
 	Test    struct {
-		Filter          string            `json:"filter"`
-		Parameters      map[string]string `json:"parameters"`
-		TestPackageArn  string            `json:"testPackageArn"`
-		TestPackagePath string            `json:"testPackagePath"`
-		Type            string            `json:"type"`
-	} `json:"test"`
+		Filter          string            `json:"filter,omitempty"`
+		Parameters      map[string]string `json:"parameters,omitempty"`
+		TestPackageArn  string            `json:"testPackageArn,omitempty"`
+		TestPackagePath string            `json:"testPackagePath,omitempty"`
+		Type            string            `json:"type,omitempty"`
+	} `json:"test,omitempty"`
 	AdditionalData struct {
-		AuxiliaryApps        []string `json:"auxiliaryApps"`
-		BillingMethod        string   `json:"billingMethod"`
-		ExtraDataPackageArn  string   `json:"extraDataPackageArn"`
-		ExtraDataPackagePath string   `json:"extraDataPackagePath"`
-		Locale               string   `json:"locale"`
+		AuxiliaryApps        []string `json:"auxiliaryApps,omitempty"`
+		BillingMethod        string   `json:"billingMethod,omitempty"`
+		ExtraDataPackageArn  string   `json:"extraDataPackageArn,omitempty"`
+		ExtraDataPackagePath string   `json:"extraDataPackagePath,omitempty"`
+		Locale               string   `json:"locale,omitempty"`
 		Location             struct {
-			Latitude  float64 `json:"latitude"`
-			Longitude float64 `json:"longitude"`
-		} `json:"location"`
-		NetworkProfileArn string `json:"networkProfileArn"`
+			Latitude  float64 `json:"latitude,omitempty"`
+			Longitude float64 `json:"longitude,omitempty"`
+		} `json:"location,omitempty"`
+		NetworkProfileArn string `json:"networkProfileArn,omitempty"`
 		Radios            struct {
-			Bluetooth string `json:"bluetooth"`
-			Gps       string `json:"gps"`
-			Nfc       string `json:"nfc"`
-			Wifi      string `json:"wifi"`
-		} `json:"radios"`
-	} `json:"additionalData"`
+			Bluetooth string `json:"bluetooth,omitempty"`
+			Gps       string `json:"gps,omitempty"`
+			Nfc       string `json:"nfc,omitempty"`
+			Wifi      string `json:"wifi,omitempty"`
+		} `json:"radios,omitempty"`
+	} `json:"additionalData,omitempty"`
 }
 
 // Transform unmarshall JSON config file to struct

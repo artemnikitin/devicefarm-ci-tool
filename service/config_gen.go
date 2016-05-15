@@ -30,11 +30,34 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf *config.RunConfi
 			},
 		},
 	}
-	if conf.RunName != "" {
-		result.Name = aws.String(conf.RunName)
+
+	result.Name = aws.String(conf.RunName)
+	result.Configuration.AuxiliaryApps = aws.StringSlice(conf.AdditionalData.AuxiliaryApps)
+	if conf.AdditionalData.BillingMethod != "" {
+		result.Configuration.BillingMethod = aws.String(conf.AdditionalData.BillingMethod)
+	}
+	result.Configuration.Locale = aws.String(conf.AdditionalData.Locale)
+	if conf.AdditionalData.Location.Latitude != 0 {
+		result.Configuration.Location.Latitude = aws.Float64(conf.AdditionalData.Location.Latitude)
+	}
+	if conf.AdditionalData.Location.Longitude != 0 {
+		result.Configuration.Location.Longitude = aws.Float64(conf.AdditionalData.Location.Longitude)
+	}
+	if conf.AdditionalData.NetworkProfileArn != "" {
+		result.Configuration.NetworkProfileArn = aws.String(conf.AdditionalData.NetworkProfileArn)
+	}
+	result.Configuration.Radios.Bluetooth = aws.Bool(stringToBool(conf.AdditionalData.Radios.Bluetooth))
+	result.Configuration.Radios.Gps = aws.Bool(stringToBool(conf.AdditionalData.Radios.Gps))
+	result.Configuration.Radios.Nfc = aws.Bool(stringToBool(conf.AdditionalData.Radios.Nfc))
+	result.Configuration.Radios.Wifi = aws.Bool(stringToBool(conf.AdditionalData.Radios.Wifi))
+	result.Test.Filter = aws.String(conf.Test.Filter)
+	result.Test.Parameters = aws.StringMap(conf.Test.Parameters)
+	if conf.Test.Type != "" {
+		result.Test.Type = aws.String(conf.Test.Type)
+	} else {
+		result.Test.Type = aws.String("BUILTIN_FUZZ")
 	}
 
-	processTestBlock(conf, result)
 	if conf.Test.TestPackageArn == "" && conf.Test.TestPackagePath != "" {
 		wg.Add(1)
 		go func() {
@@ -50,8 +73,10 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf *config.RunConfi
 			wg.Done()
 		}()
 	}
+	if conf.Test.TestPackageArn != "" {
+		result.Test.TestPackageArn = aws.String(conf.Test.TestPackageArn)
+	}
 
-	processConfigurationBlock(conf, result)
 	if conf.AdditionalData.ExtraDataPackageArn == "" && conf.AdditionalData.ExtraDataPackagePath != "" {
 		wg.Add(1)
 		go func() {
@@ -66,65 +91,18 @@ func createScheduleRunInput(client *devicefarm.DeviceFarm, conf *config.RunConfi
 			wg.Done()
 		}()
 	}
+	if conf.AdditionalData.ExtraDataPackageArn != "" {
+		result.Configuration.ExtraDataPackageArn = aws.String(conf.AdditionalData.ExtraDataPackageArn)
+	}
+
 	wg.Wait()
 	return result
 }
 
-func processTestBlock(conf *config.RunConfig, sri *devicefarm.ScheduleRunInput) {
-	if conf.Test.Type != "" {
-		sri.Test.Type = aws.String(conf.Test.Type)
+func stringToBool(str string) bool {
+	b, err := strconv.ParseBool(strings.ToLower(str))
+	if err != nil {
+		return true
 	}
-	if conf.Test.TestPackageArn != "" {
-		sri.Test.TestPackageArn = aws.String(conf.Test.TestPackageArn)
-	}
-	if conf.Test.Filter != "" {
-		sri.Test.Filter = aws.String(conf.Test.Filter)
-	}
-	params := conf.Test.Parameters
-	if len(params) > 0 {
-		temp := make(map[string]*string)
-		for k, v := range params {
-			temp[k] = aws.String(v)
-		}
-		sri.Test.Parameters = temp
-	}
-}
-
-func processConfigurationBlock(conf *config.RunConfig, sri *devicefarm.ScheduleRunInput) {
-	if conf.AdditionalData.BillingMethod != "" {
-		sri.Configuration.BillingMethod = aws.String(conf.AdditionalData.BillingMethod)
-	}
-	if conf.AdditionalData.Locale != "" {
-		sri.Configuration.Locale = aws.String(conf.AdditionalData.Locale)
-	}
-	if conf.AdditionalData.NetworkProfileArn != "" {
-		sri.Configuration.NetworkProfileArn = aws.String(conf.AdditionalData.NetworkProfileArn)
-	}
-	if conf.AdditionalData.Location.Latitude != 0 && conf.AdditionalData.Location.Longitude != 0 {
-		sri.Configuration.Location.Latitude = aws.Float64(conf.AdditionalData.Location.Latitude)
-		sri.Configuration.Location.Longitude = aws.Float64(conf.AdditionalData.Location.Longitude)
-	}
-	if len(conf.AdditionalData.AuxiliaryApps) != 0 {
-		array := conf.AdditionalData.AuxiliaryApps
-		sri.Configuration.AuxiliaryApps = aws.StringSlice(array)
-	}
-	if strings.ToLower(conf.AdditionalData.Radios.Bluetooth) == "false" {
-		b, _ := strconv.ParseBool(conf.AdditionalData.Radios.Bluetooth)
-		sri.Configuration.Radios.Bluetooth = aws.Bool(b)
-	}
-	if strings.ToLower(conf.AdditionalData.Radios.Gps) == "false" {
-		b, _ := strconv.ParseBool(conf.AdditionalData.Radios.Gps)
-		sri.Configuration.Radios.Gps = aws.Bool(b)
-	}
-	if strings.ToLower(conf.AdditionalData.Radios.Nfc) == "false" {
-		b, _ := strconv.ParseBool(conf.AdditionalData.Radios.Nfc)
-		sri.Configuration.Radios.Nfc = aws.Bool(b)
-	}
-	if strings.ToLower(conf.AdditionalData.Radios.Wifi) == "false" {
-		b, _ := strconv.ParseBool(conf.AdditionalData.Radios.Wifi)
-		sri.Configuration.Radios.Wifi = aws.Bool(b)
-	}
-	if conf.AdditionalData.ExtraDataPackageArn != "" {
-		sri.Configuration.ExtraDataPackageArn = aws.String(conf.AdditionalData.ExtraDataPackageArn)
-	}
+	return b
 }

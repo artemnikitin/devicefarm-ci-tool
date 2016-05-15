@@ -81,6 +81,25 @@ func TestGenerateScheduleRunInputWithTestBlock(t *testing.T) {
 	}
 }
 
+func TestStringToBool(t *testing.T) {
+	cases := map[string]bool{
+		"true":             true,
+		"false":            false,
+		"TRUE":             true,
+		"FALSE":            false,
+		"TrUe":             true,
+		"FaLsE":            false,
+		"incorrect string": true,
+	}
+
+	for k, v := range cases {
+		res := stringToBool(k)
+		if res != v {
+			t.Errorf("For case: %s, actual: %t, expected: %t", k, res, v)
+		}
+	}
+}
+
 func create(bytes []byte) *devicefarm.ScheduleRunInput {
 	cf := config.Transform(bytes)
 	deviceFarmConfig := createScheduleRunInput(client, &cf, "232323")

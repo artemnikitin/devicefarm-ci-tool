@@ -25,6 +25,8 @@ _testmain.go
 .idea
 *.iml
 
+*.apk
+
 # Test data
 *.json
 *.txt
