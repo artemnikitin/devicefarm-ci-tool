@@ -92,7 +92,3 @@ Example of config:
    }
 }
 ```
-
-##### TODO  
-1. Fix issues
-2. Alternative ways to authenticate in AWS
