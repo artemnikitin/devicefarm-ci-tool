@@ -23,7 +23,7 @@ func StringEndsWith(original, substring string) bool {
 }
 
 // GetFilename returns file name from path string
-func GetFilename(path string) string {
+func GetFileName(path string) string {
 	if !strings.Contains(path, "/") {
 		return path
 	}

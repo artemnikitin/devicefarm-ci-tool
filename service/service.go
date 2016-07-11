@@ -44,7 +44,7 @@ func CreateUploadWithType(client *devicefarm.DeviceFarm, arn, appPath, uploadTyp
 
 func internalCreateUpload(client *devicefarm.DeviceFarm, arn, appPath, appType string) (string, string) {
 	params := &devicefarm.CreateUploadInput{
-		Name:        aws.String(tools.GetFilename(appPath)),
+		Name:        aws.String(tools.GetFileName(appPath)),
 		ProjectArn:  aws.String(arn),
 		Type:        aws.String(appType),
 		ContentType: aws.String("application/octet-stream"),
