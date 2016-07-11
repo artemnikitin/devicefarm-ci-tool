@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/artemnikitin/devicefarm-ci-tool/config"
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
+	"github.com/artemnikitin/devicefarm-ci-tool/model"
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
@@ -73,13 +73,13 @@ func GetDevicePoolArn(client *devicefarm.DeviceFarm, projectArn, devicePool stri
 	return arn
 }
 
-// RunWithConfig will schedule run with setup from JSON config
-func RunWithConfig(client *devicefarm.DeviceFarm, devicePoolArn, projectArn, appArn string, conf *config.RunConfig) (string, string) {
-	params := createScheduleRunInput(client, conf, projectArn)
-	params.DevicePoolArn = aws.String(devicePoolArn)
-	params.AppArn = aws.String(appArn)
+// RunWithConfig will schedule run with setup from JSON model
+func RunWithConfig(p *model.RunParameters) (string, string) {
+	params := createScheduleRunInput(p)
+	params.DevicePoolArn = aws.String(p.DeviceArn)
+	params.AppArn = aws.String(p.AppArn)
 	log.Println("Starting job ...")
-	resp, err := client.ScheduleRun(params)
+	resp, err := p.Client.ScheduleRun(params)
 	errors.Validate(err, "Failed to run tests")
 	log.Println("Run ARN:", *resp.Run.Arn)
 	return *resp.Run.Arn, *resp.Run.Status

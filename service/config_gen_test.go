@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/artemnikitin/aws-config"
-	"github.com/artemnikitin/devicefarm-ci-tool/config"
+	"github.com/artemnikitin/devicefarm-ci-tool/model"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
@@ -101,8 +101,13 @@ func TestStringToBool(t *testing.T) {
 }
 
 func create(bytes []byte) *devicefarm.ScheduleRunInput {
-	cf := config.Transform(bytes)
-	deviceFarmConfig := createScheduleRunInput(client, &cf, "232323")
+	cf := model.Transform(bytes)
+	p := &model.RunParameters{
+		Client:  client,
+		Config:  &cf,
+		Project: "232323",
+	}
+	deviceFarmConfig := createScheduleRunInput(p)
 	fmt.Println(deviceFarmConfig.String())
 	return deviceFarmConfig
 }

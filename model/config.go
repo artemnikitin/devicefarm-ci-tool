@@ -1,4 +1,4 @@
-package config
+package model
 
 import (
 	"encoding/json"
@@ -21,7 +21,7 @@ var m = map[string]string{
 	"APPIUM_WEB_PYTHON":      "APPIUM_WEB_PYTHON_TEST_PACKAGE",
 }
 
-// RunConfig contains serialized representation of run config from JSON file
+// RunConfig contains serialized representation of run model from JSON file
 type RunConfig struct {
 	RunName string `json:"runName,omitempty"`
 	Test    struct {
@@ -51,11 +51,11 @@ type RunConfig struct {
 	} `json:"additionalData,omitempty"`
 }
 
-// Transform unmarshall JSON config file to struct
+// Transform unmarshall JSON model file to struct
 func Transform(jsonBytes []byte) RunConfig {
 	result := &RunConfig{}
 	err := json.Unmarshal(jsonBytes, result)
-	errors.Validate(err, "Can't read config file")
+	errors.Validate(err, "Can't read model file")
 	return *result
 }
 

@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/artemnikitin/aws-config"
-	"github.com/artemnikitin/devicefarm-ci-tool/config"
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
+	"github.com/artemnikitin/devicefarm-ci-tool/model"
 	"github.com/artemnikitin/devicefarm-ci-tool/service"
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -36,31 +36,37 @@ func main() {
 	runJob(getAWSClient(), getConfig())
 }
 
-func runJob(client *devicefarm.DeviceFarm, config *config.RunConfig) {
-	projectArn := service.GetProjectArn(client, *project)
-	if projectArn == "" {
+func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
+	p := &model.RunParameters{
+		Client:  client,
+		Config:  config,
+		Project: *project,
+	}
+	p.ProjectArn = service.GetProjectArn(p.Client, p.Project)
+	if p.ProjectArn == "" {
 		log.Fatal("Application finished, because it can't retrieve project ARN")
 	}
-	deviceArn := service.GetDevicePoolArn(client, projectArn, *devicePool)
-	appArn, url := service.CreateUpload(client, projectArn, *appPath)
+	p.DeviceArn = service.GetDevicePoolArn(p.Client, p.ProjectArn, *devicePool)
+	appArn, url := service.CreateUpload(p.Client, p.ProjectArn, *appPath)
 	code := tools.UploadFile(*appPath, url)
 	if code != 200 {
 		log.Fatal("Can't upload an app to Device Farm")
 	}
-	service.WaitForAppProcessed(client, appArn)
-	runArn, status := service.RunWithConfig(client, deviceArn, projectArn, appArn, config)
+	p.AppArn = appArn
+	service.WaitForAppProcessed(p.Client, p.AppArn)
+	runArn, status := service.RunWithConfig(p)
 	statusCheck(status)
 	if *wait {
-		service.WaitForRunEnds(client, runArn)
+		service.WaitForRunEnds(p.Client, runArn)
 	}
 }
 
-func getConfig() *config.RunConfig {
-	configFile := &config.RunConfig{}
+func getConfig() *model.RunConfig {
+	configFile := &model.RunConfig{}
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
-		errors.Validate(err, "Can't read config file")
-		*configFile = config.Transform(bytes)
+		errors.Validate(err, "Can't read model file")
+		*configFile = model.Transform(bytes)
 	}
 	return configFile
 }
