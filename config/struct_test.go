@@ -15,27 +15,27 @@ func TestTransformSuccess(t *testing.T) {
 func TestSizeOfArrays(t *testing.T) {
 	config := createSmallTestData()
 	if len(config.AdditionalData.AuxiliaryApps) != 0 {
-		t.Error("Size should be 0")
+		t.Error("Size of AdditionalData.AuxiliaryApps should be 0")
 	}
 	if len(config.Test.Parameters) != 0 {
-		t.Error("Size should be 0")
+		t.Error("Size of Test.Parameters should be 0")
 	}
 }
 
 func TestContainMapData(t *testing.T) {
 	config := createMapTestData()
 	if len(config.Test.Parameters) != 1 {
-		t.Error("Size of map should be 1")
+		t.Error("Size of Test.Parameters should be 1")
 	}
 	if config.Test.Parameters["key"] != "value" {
-		t.Error("Result should be equal to 'value'")
+		t.Error("Test.Parameters['key'] should return 'value'")
 	}
 }
 
 func TestDontContainMapData(t *testing.T) {
 	config := createSmallTestData()
 	if len(config.Test.Parameters) != 0 {
-		t.Error("Size of map should be 0")
+		t.Error("Size of Test.Parameters should be 0")
 	}
 }
 
