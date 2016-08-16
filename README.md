@@ -1,12 +1,12 @@
 ## Tool that helps more easier run your apps in AWS Device Farm
 [![Go Report Card](https://goreportcard.com/badge/github.com/artemnikitin/devicefarm-ci-tool)](https://goreportcard.com/report/github.com/artemnikitin/devicefarm-ci-tool)  [![codebeat badge](https://codebeat.co/badges/681739e3-a860-404c-a99d-3b02a98606fb)](https://codebeat.co/projects/github-com-artemnikitin-devicefarm-ci-tool)  [![Circle CI](https://circleci.com/gh/artemnikitin/devicefarm-ci-tool.svg?style=shield&circle-token=7f9634b483cd46ffb7b51d8b1c1c84ca4431b779)](https://circleci.com/gh/artemnikitin/devicefarm-ci-tool)   
-##### Description
+#### Description
 Did you try to run an app in AWS Device Farm via CLI or API? It was easy, right? Right now you can probably say ARN of your project after wake up in the middle of night.    
 This tool helps to run apps in AWS Device Farm easier. You don't need to know ARN, because it's for machine, not for humans.
 
 It's not a replacement for existing AWS CLI tools. It was created for a very specific purpose, to run tests in CI without a lot of configuration that required for existing solutions. It based on an assumption that all setup is already done. It means, that if you will specify an unexisted project name, then the tool wouldn't create it.   
 
-##### AWS Credentials
+#### AWS Credentials
 
 Set environment variables     
 ```
@@ -14,7 +14,7 @@ export AWS_ACCESS_KEY_ID=<key>
 export AWS_SECRET_ACCESS_KEY=<secret>
 ```     
 
-##### Run it
+#### Run it
 Get it via    
 ``` 
 go get github.com/artemnikitin/devicefarm-ci-tool 
@@ -28,7 +28,7 @@ devicefarm-ci-tool -project=name -app=/path/to/my/app.apk
 ```
 By default, "BUILTIN_FUZZ" tests will be run for your app.
 
-##### Optional parameters:   
+#### Optional parameters:   
 - ```region``` set S3 region, by default region will be set to ```us-west-2```(At this moment, will be set to ```us-west-2``` in any case, because it's only supported region for the moment).          
 Example:    
 ``` 
@@ -50,9 +50,9 @@ Example:
 devicefarm-ci-tool -project=name -app=/path/to/my/app.apk -wait=true
 ```   
 
-You can specify parameter ```-log=true``` for logging AWS requests and responses.
+You can specify parameter ```-log``` for logging AWS requests and responses.
 
-##### Configuration file description
+#### Configuration file description
 All parameters in the configuration file is optional. For reference you can look at http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html  
 
 Example of config:
