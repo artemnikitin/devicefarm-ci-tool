@@ -4,3 +4,6 @@ go:
 
 script:
  - go test $(go list ./... | grep -v /vendor/)
+
+after_success:
+ - curl --request POST "https://goreportcard.com/checks" --data "repo=github.com/artemnikitin/devicefarm-ci-tool"
