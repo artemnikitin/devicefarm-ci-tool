@@ -2,6 +2,7 @@ package service
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
@@ -29,7 +30,7 @@ func GetProjectArn(client *devicefarm.DeviceFarm, project string) string {
 // CreateUpload creates pre-signed S3 URL for upload
 func CreateUpload(client *devicefarm.DeviceFarm, arn, appPath string) (string, string) {
 	var appType string
-	if tools.StringEndsWith(appPath, ".apk") {
+	if strings.HasSuffix(appPath, ".apk") {
 		appType = "ANDROID_APP"
 	} else {
 		appType = "IOS_APP"

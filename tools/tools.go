@@ -13,15 +13,6 @@ func UploadFile(path, url string) int {
 	return getStatusOfUpload(resp)
 }
 
-// StringEndsWith check that string ends with specified substring
-func StringEndsWith(original, substring string) bool {
-	if len(substring) > len(original) {
-		return false
-	}
-	str := string(original[len(original)-len(substring):])
-	return str == substring
-}
-
 // GetFileName returns file name from path string
 func GetFileName(path string) string {
 	if !strings.Contains(path, "/") {
