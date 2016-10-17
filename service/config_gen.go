@@ -60,12 +60,12 @@ func createScheduleRunInput(p *model.RunParameters) *devicefarm.ScheduleRunInput
 	if p.Config.Test.TestPackageArn != "" {
 		result.Test.TestPackageArn = aws.String(p.Config.Test.TestPackageArn)
 	} else {
-		uploadTestPackage(p, result, wg)
+		uploadTestPackage(p, result, &wg)
 	}
 	if p.Config.AdditionalData.ExtraDataPackageArn != "" {
 		result.Configuration.ExtraDataPackageArn = aws.String(p.Config.AdditionalData.ExtraDataPackageArn)
 	} else {
-		uploadExtraData(p, result, wg)
+		uploadExtraData(p, result, &wg)
 	}
 	wg.Wait()
 	return result
@@ -79,7 +79,7 @@ func stringToBool(str string) bool {
 	return b
 }
 
-func uploadExtraData(p *model.RunParameters, result *devicefarm.ScheduleRunInput, wg sync.WaitGroup) {
+func uploadExtraData(p *model.RunParameters, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	if p.Config.AdditionalData.ExtraDataPackageArn == "" && p.Config.AdditionalData.ExtraDataPackagePath != "" {
 		wg.Add(1)
 		go func() {
@@ -96,7 +96,7 @@ func uploadExtraData(p *model.RunParameters, result *devicefarm.ScheduleRunInput
 	}
 }
 
-func uploadTestPackage(p *model.RunParameters, result *devicefarm.ScheduleRunInput, wg sync.WaitGroup) {
+func uploadTestPackage(p *model.RunParameters, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	if p.Config.Test.TestPackageArn == "" && p.Config.Test.TestPackagePath != "" {
 		wg.Add(1)
 		go func() {
