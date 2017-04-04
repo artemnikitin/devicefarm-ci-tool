@@ -1,9 +1,9 @@
 package tools
 
 import (
+	"fmt"
 	"log"
 	"strings"
-	"fmt"
 )
 
 // UploadFile used to upload file by S3 pre-signed URL
