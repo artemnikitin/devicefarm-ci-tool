@@ -22,11 +22,10 @@ _testmain.go
 *.exe
 *.test
 *.prof
-.idea
+.idea/
 *.iml
-
-*.apk
 
 # Test data
 *.json
 *.txt
+*.apk
