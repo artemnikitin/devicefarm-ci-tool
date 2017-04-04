@@ -18,14 +18,18 @@ import (
 
 var (
 	project    = flag.String("project", "", "Device Farm project name")
+	runName    = flag.String("run", "", "Name of test run")
 	appPath    = flag.String("app", "", "Path to an app")
+	testPath   = flag.String("test", "", "Path to test app")
 	devicePool = flag.String("devices", "Top Devices", "Specify list of devices for tests")
 	configJSON = flag.String("config", "", "Path to JSON config")
 	wait       = flag.Bool("wait", false, "Wait for run end")
+	checkEvery = flag.Int("checkEvery", 5 , "Specified time slice for checking status of run")
 )
 
 func main() {
 	flag.Parse()
+
 	if *project == "" || *appPath == "" {
 		fmt.Println("Please specify correct parameters!")
 		fmt.Println("You should specify:")
@@ -33,6 +37,7 @@ func main() {
 		fmt.Println("-app, path to an app you want to run")
 		os.Exit(1)
 	}
+
 	runJob(getAWSClient(), getConfig())
 }
 
@@ -57,7 +62,7 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 	runArn, status := service.RunWithConfig(p)
 	statusCheck(status)
 	if *wait {
-		service.WaitForRunEnds(p.Client, runArn)
+		service.WaitForRunEnds(p.Client, runArn, *checkEvery)
 	}
 }
 
@@ -67,6 +72,12 @@ func getConfig() *model.RunConfig {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		errors.Validate(err, "Can't read model file")
 		*configFile = model.Transform(bytes)
+	}
+	if *runName != "" {
+		configFile.RunName = *runName
+	}
+	if *testPath != "" {
+		configFile.Test.TestPackagePath = *testPath
 	}
 	return configFile
 }
@@ -82,7 +93,7 @@ func getAWSClient() *devicefarm.DeviceFarm {
 
 func statusCheck(status string) {
 	if status == "SCHEDULING" {
-		log.Println("Job is started!")
+		log.Println("Job is scheduled!")
 	} else {
 		log.Println("Status =", status)
 		log.Fatal("Failed to start a job ...")
