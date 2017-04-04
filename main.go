@@ -24,7 +24,7 @@ var (
 	devicePool = flag.String("devices", "Top Devices", "Specify list of devices for tests")
 	configJSON = flag.String("config", "", "Path to JSON config")
 	wait       = flag.Bool("wait", false, "Wait for run end")
-	checkEvery = flag.Int("checkEvery", 5 , "Specified time slice for checking status of run")
+	checkEvery = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
 )
 
 func main() {
@@ -64,6 +64,7 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 	if *wait {
 		service.WaitForRunEnds(p.Client, runArn, *checkEvery)
 	}
+	printReportURL(runArn)
 }
 
 func getConfig() *model.RunConfig {
@@ -98,4 +99,8 @@ func statusCheck(status string) {
 		log.Println("Status =", status)
 		log.Fatal("Failed to start a job ...")
 	}
+}
+
+func printReportURL(arn string) {
+	log.Println("Test report URL:", tools.GenerateReportURL(arn))
 }

@@ -3,6 +3,7 @@ package tools
 import (
 	"log"
 	"strings"
+	"fmt"
 )
 
 // UploadFile used to upload file by S3 pre-signed URL
@@ -20,4 +21,19 @@ func GetFileName(path string) string {
 	}
 	pos := strings.LastIndex(path, "/")
 	return string(path[pos+1:])
+}
+
+// GenerateReportURL generate URL to test report from ARN
+func GenerateReportURL(arn string) string {
+	URL := "https://us-west-2.console.aws.amazon.com/devicefarm/home?region=us-west-2#/projects/%s/runs/%s"
+	index := strings.Index(arn, ":run:")
+	if index == -1 {
+		log.Println("Can't generate test report URL from ARN:", arn)
+		return ""
+	}
+	str := arn[index+5:]
+	index = strings.Index(str, "/")
+	project := str[:index]
+	run := str[index+1:]
+	return fmt.Sprintf(URL, project, run)
 }
