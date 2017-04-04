@@ -53,6 +53,13 @@ func TestGetUploadPositive(t *testing.T) {
 	}
 }
 
+func TestExecutionConfiguration(t *testing.T) {
+	config := createMapTestData()
+	if config.ExecutionConfiguration.JobTimeoutMinutes != 0 {
+		t.Error("By default timeout should be 0")
+	}
+}
+
 func createSmallTestData() RunConfig {
 	json := []byte(`{"runName":"name"}`)
 	return Transform(json)

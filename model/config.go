@@ -49,6 +49,9 @@ type RunConfig struct {
 			Wifi      string `json:"wifi,omitempty"`
 		} `json:"radios,omitempty"`
 	} `json:"additionalData,omitempty"`
+	ExecutionConfiguration struct {
+		JobTimeoutMinutes int `json:"jobTimeoutMinutes,omitempty"`
+	} `json:"executionConfiguration,omitempty"`
 }
 
 // Transform unmarshall JSON model file to struct
