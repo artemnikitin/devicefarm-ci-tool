@@ -61,10 +61,10 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 	service.WaitForAppProcessed(p.Client, p.AppArn)
 	runArn, status := service.RunWithConfig(p)
 	statusCheck(status)
+	printReportURL(runArn)
 	if *wait {
 		service.WaitForRunEnds(p.Client, runArn, *checkEvery)
 	}
-	printReportURL(runArn)
 }
 
 func getConfig() *model.RunConfig {
