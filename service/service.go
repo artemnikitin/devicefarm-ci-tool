@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
@@ -134,4 +135,72 @@ func GetStatusOfRun(client *devicefarm.DeviceFarm, arn string) (string, string) 
 	resp, err := client.GetRun(params)
 	errors.Validate(err, "Can't get status of run")
 	return *resp.Run.Status, *resp.Run.Result
+}
+
+// GetListOfFailedTests returns list of failed test for a specified run with additional info
+func GetListOfFailedTests(client *devicefarm.DeviceFarm, arn string) []*model.FailedTest {
+	var wg sync.WaitGroup
+	var m sync.Mutex
+	var result []*model.FailedTest
+
+	jobs := getListOfJobsForRun(client, arn)
+
+	wg.Add(len(jobs))
+	for i := 0; i < len(jobs); i++ {
+		go func(i int) {
+			device := *jobs[i].Name
+			os := *jobs[i].Device.Platform + " " + *jobs[i].Device.Os
+
+			suites := getListOfSuitesForJob(client, *jobs[i].Arn)
+			suitesArn := getListOfTestArnFromSuite(suites)
+			tests := getListOfFailedTestsFromSuite(client, suitesArn, device, os)
+			tempResult := populateResult(tests, client)
+
+			m.Lock()
+			result = append(result, tempResult...)
+			m.Unlock()
+
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+
+	return result
+}
+
+func getListOfJobsForRun(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Job {
+	params := &devicefarm.ListJobsInput{
+		Arn: aws.String(arn),
+	}
+	resp, err := client.ListJobs(params)
+	errors.Validate(err, "Can't get list of jobs for run")
+	return resp.Jobs
+}
+
+func getListOfSuitesForJob(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Suite {
+	params := &devicefarm.ListSuitesInput{
+		Arn: aws.String(arn),
+	}
+	resp, err := client.ListSuites(params)
+	errors.Validate(err, "Can't get list of suites for job")
+	return resp.Suites
+}
+
+func getListOfTestForSuite(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Test {
+	params := &devicefarm.ListTestsInput{
+		Arn: aws.String(arn),
+	}
+	resp, err := client.ListTests(params)
+	errors.Validate(err, "Can't get list of tests for suite")
+	return resp.Tests
+}
+
+func getArtifactsForTest(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Artifact {
+	params := &devicefarm.ListArtifactsInput{
+		Arn:  aws.String(arn),
+		Type: aws.String(devicefarm.ArtifactCategoryFile),
+	}
+	resp, err := client.ListArtifacts(params)
+	errors.Validate(err, "Can't get list of artifacts for a test")
+	return resp.Artifacts
 }

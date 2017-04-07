@@ -65,7 +65,11 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 		result := service.WaitForRunEnds(p.Client, runArn, *checkEvery)
 		printReportURL(runArn)
 		if result != "PASSED" {
-			log.Println("There are some test fails, check it out!")
+			fails := service.GetListOfFailedTests(client, runArn)
+			log.Printf("There are %d test fails, check it out!\n", len(fails))
+			for i := 0; i < len(fails); i++ {
+				fmt.Println(fails[i].ToString())
+			}
 		}
 	}
 }
