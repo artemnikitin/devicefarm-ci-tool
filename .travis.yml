@@ -1,8 +1,11 @@
 language: go
 
-go: 
+go:
  - 1.7.x
  - 1.8.x
+
+install:
+ - pwd #just for using vendored dependencies
 
 script:
  - go test -race -v $(go list ./... | grep -v /vendor/)
