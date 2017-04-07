@@ -33,13 +33,20 @@ devicefarm-ci-tool -project name -app /path/to/my/app.apk
 By default, "BUILTIN_FUZZ" tests will be run for your app.
 
 Optional parameters:
-- ```run``` name of test run. Overrides value of `runName` parameter from config. Example: `-run myName` 
-- ```test``` path to tests. Overrides value of `testPackagePath` parameter from config. Example: `-test /path/to/my/testapp.apk` 
-- ```devices``` name of device pool where app will be run. Example:`-devices my-device-pool`      
-- ```config``` path to config in JSON format. Example:`-config /path/to/config.json`   
-- ```wait``` wait for an end of test run. Useful for CI. Disabled by default. Example:`-wait`  
-- ```checkEvery``` checks every X seconds for test run completion. Default value is 5 second. Example: `-checkEvery 15`
-- ```-log``` enable AWS requests and responses logging. Example:`-log`    
+- ```run``` name of test run. Overrides value of `runName` parameter from config.     
+Example: `-run myName` 
+- ```test``` path to tests. Overrides value of `testPackagePath` parameter from config.     
+Example: `-test /path/to/my/testapp.apk` 
+- ```devices``` name of device pool where app will be run.      
+Example:`-devices my-device-pool`      
+- ```config``` path to config in JSON format.      
+Example:`-config /path/to/config.json`   
+- ```wait``` wait for an end of test run. Useful for CI. Disabled by default.     
+Example:`-wait`  
+- ```checkEvery``` checks every X seconds for test run completion. Default value is 5 second.    
+Example: `-checkEvery 15`
+- ```-log``` enable AWS requests and responses logging.     
+Example:`-log`    
 
 #### Configuration file
 All parameters in the configuration file is optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
