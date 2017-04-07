@@ -61,9 +61,12 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 	service.WaitForAppProcessed(p.Client, p.AppArn)
 	runArn, status := service.RunWithConfig(p)
 	statusCheck(status)
-	printReportURL(runArn)
 	if *wait {
-		service.WaitForRunEnds(p.Client, runArn, *checkEvery)
+		result := service.WaitForRunEnds(p.Client, runArn, *checkEvery)
+		printReportURL(runArn)
+		if result != "PASSED" {
+			log.Println("There are some test fails, check it out!")
+		}
 	}
 }
 

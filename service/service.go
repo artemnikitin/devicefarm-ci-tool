@@ -115,18 +115,15 @@ func GetUploadStatus(client *devicefarm.DeviceFarm, arn string) string {
 }
 
 // WaitForRunEnds for run to finish and returns it's result
-func WaitForRunEnds(client *devicefarm.DeviceFarm, arn string, checkEvery int) {
+func WaitForRunEnds(client *devicefarm.DeviceFarm, arn string, checkEvery int) string {
 	status, result := GetStatusOfRun(client, arn)
 	for status != "COMPLETED" {
 		log.Println("Waiting for run to finish...")
 		time.Sleep(time.Duration(checkEvery) * time.Second)
 		status, result = GetStatusOfRun(client, arn)
 	}
-	if result == "PASSED" {
-		log.Println("Run successfully finished!")
-	} else {
-		log.Fatal("There was a problem with this run. Status :", result)
-	}
+	log.Println("Run finished!")
+	return result
 }
 
 // GetStatusOfRun returns status and result of run specified by ARN
