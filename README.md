@@ -49,7 +49,7 @@ Example: `-checkEvery 15`
 Example:`-log`    
 
 #### Configuration file
-All parameters in the configuration file is optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
+All parameters in the configuration file are optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
 
 Example of config:
 ```json
