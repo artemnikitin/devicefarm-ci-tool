@@ -20,7 +20,7 @@ Get it via
 go get -u github.com/artemnikitin/devicefarm-ci-tool 
 ``` 
 
-Or download binaries for Windows, MacOS or Linux from [latest release](https://github.com/artemnikitin/devicefarm-ci-tool/releases)   
+Or download binaries for Windows, MacOS or Linux from [latest release](https://github.com/artemnikitin/devicefarm-ci-tool/releases/latest)   
    
 #### Run
 Required launch parameters:
