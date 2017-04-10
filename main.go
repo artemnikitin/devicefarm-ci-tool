@@ -70,6 +70,7 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 			for i := 0; i < len(fails); i++ {
 				fmt.Println(fails[i].ToString())
 			}
+			os.Exit(1)
 		}
 	}
 }
