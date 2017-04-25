@@ -11,10 +11,11 @@ import (
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
+	"github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
 )
 
 // GetProjectArn returns project ARN by project name
-func GetProjectArn(client *devicefarm.DeviceFarm, project string) string {
+func GetProjectArn(client devicefarmiface.DeviceFarmAPI, project string) string {
 	var arn string
 	params := &devicefarm.ListProjectsInput{}
 	resp, err := client.ListProjects(params)
@@ -29,7 +30,7 @@ func GetProjectArn(client *devicefarm.DeviceFarm, project string) string {
 }
 
 // CreateUpload creates pre-signed S3 URL for upload
-func CreateUpload(client *devicefarm.DeviceFarm, arn, appPath string) (string, string) {
+func CreateUpload(client devicefarmiface.DeviceFarmAPI, arn, appPath string) (string, string) {
 	var appType string
 	if strings.HasSuffix(appPath, ".apk") {
 		appType = "ANDROID_APP"
@@ -40,11 +41,11 @@ func CreateUpload(client *devicefarm.DeviceFarm, arn, appPath string) (string, s
 }
 
 // CreateUploadWithType creates upload with specific type
-func CreateUploadWithType(client *devicefarm.DeviceFarm, arn, appPath, uploadType string) (string, string) {
+func CreateUploadWithType(client devicefarmiface.DeviceFarmAPI, arn, appPath, uploadType string) (string, string) {
 	return internalCreateUpload(client, arn, appPath, uploadType)
 }
 
-func internalCreateUpload(client *devicefarm.DeviceFarm, arn, appPath, appType string) (string, string) {
+func internalCreateUpload(client devicefarmiface.DeviceFarmAPI, arn, appPath, appType string) (string, string) {
 	params := &devicefarm.CreateUploadInput{
 		Name:        aws.String(tools.GetFileName(appPath)),
 		ProjectArn:  aws.String(arn),
@@ -59,7 +60,7 @@ func internalCreateUpload(client *devicefarm.DeviceFarm, arn, appPath, appType s
 }
 
 // GetDevicePoolArn returns device pool ARN by device pool name
-func GetDevicePoolArn(client *devicefarm.DeviceFarm, projectArn, devicePool string) string {
+func GetDevicePoolArn(client devicefarmiface.DeviceFarmAPI, projectArn, devicePool string) string {
 	var arn string
 	params := &devicefarm.ListDevicePoolsInput{
 		Arn: aws.String(projectArn),
@@ -88,7 +89,7 @@ func RunWithConfig(p *model.RunParameters) (string, string) {
 }
 
 // WaitForAppProcessed wait while app be in status "SUCCEEDED"
-func WaitForAppProcessed(client *devicefarm.DeviceFarm, arn string, timeout int) {
+func WaitForAppProcessed(client devicefarmiface.DeviceFarmAPI, arn string, timeout int) {
 	var counter int
 	limit := 300 / timeout
 	status := GetUploadStatus(client, arn)
@@ -106,7 +107,7 @@ func WaitForAppProcessed(client *devicefarm.DeviceFarm, arn string, timeout int)
 }
 
 // GetUploadStatus returns status of upload file
-func GetUploadStatus(client *devicefarm.DeviceFarm, arn string) string {
+func GetUploadStatus(client devicefarmiface.DeviceFarmAPI, arn string) string {
 	params := &devicefarm.GetUploadInput{
 		Arn: aws.String(arn),
 	}
@@ -117,7 +118,7 @@ func GetUploadStatus(client *devicefarm.DeviceFarm, arn string) string {
 }
 
 // WaitForRunEnds for run to finish and returns it's result
-func WaitForRunEnds(client *devicefarm.DeviceFarm, arn string, checkEvery int) string {
+func WaitForRunEnds(client devicefarmiface.DeviceFarmAPI, arn string, checkEvery int) string {
 	status, result := GetStatusOfRun(client, arn)
 	for status != "COMPLETED" {
 		log.Println("Waiting for run to finish...")
@@ -129,7 +130,7 @@ func WaitForRunEnds(client *devicefarm.DeviceFarm, arn string, checkEvery int) s
 }
 
 // GetStatusOfRun returns status and result of run specified by ARN
-func GetStatusOfRun(client *devicefarm.DeviceFarm, arn string) (string, string) {
+func GetStatusOfRun(client devicefarmiface.DeviceFarmAPI, arn string) (string, string) {
 	params := &devicefarm.GetRunInput{
 		Arn: aws.String(arn),
 	}
@@ -139,7 +140,7 @@ func GetStatusOfRun(client *devicefarm.DeviceFarm, arn string) (string, string) 
 }
 
 // GetListOfFailedTests returns list of failed test for a specified run with additional info
-func GetListOfFailedTests(client *devicefarm.DeviceFarm, arn string) []*model.FailedTest {
+func GetListOfFailedTests(client devicefarmiface.DeviceFarmAPI, arn string) []*model.FailedTest {
 	var wg sync.WaitGroup
 	var m sync.Mutex
 	var result []*model.FailedTest
@@ -169,7 +170,7 @@ func GetListOfFailedTests(client *devicefarm.DeviceFarm, arn string) []*model.Fa
 	return result
 }
 
-func getListOfJobsForRun(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Job {
+func getListOfJobsForRun(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Job {
 	params := &devicefarm.ListJobsInput{
 		Arn: aws.String(arn),
 	}
@@ -178,7 +179,7 @@ func getListOfJobsForRun(client *devicefarm.DeviceFarm, arn string) []*devicefar
 	return resp.Jobs
 }
 
-func getListOfSuitesForJob(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Suite {
+func getListOfSuitesForJob(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Suite {
 	params := &devicefarm.ListSuitesInput{
 		Arn: aws.String(arn),
 	}
@@ -187,7 +188,7 @@ func getListOfSuitesForJob(client *devicefarm.DeviceFarm, arn string) []*devicef
 	return resp.Suites
 }
 
-func getListOfTestForSuite(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Test {
+func getListOfTestForSuite(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Test {
 	params := &devicefarm.ListTestsInput{
 		Arn: aws.String(arn),
 	}
@@ -196,7 +197,7 @@ func getListOfTestForSuite(client *devicefarm.DeviceFarm, arn string) []*devicef
 	return resp.Tests
 }
 
-func getArtifactsForTest(client *devicefarm.DeviceFarm, arn string) []*devicefarm.Artifact {
+func getArtifactsForTest(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Artifact {
 	params := &devicefarm.ListArtifactsInput{
 		Arn:  aws.String(arn),
 		Type: aws.String(devicefarm.ArtifactCategoryFile),
