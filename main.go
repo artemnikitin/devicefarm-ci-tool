@@ -51,7 +51,11 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 	if p.ProjectArn == "" {
 		log.Fatal("Application finished, because it can't retrieve project ARN")
 	}
-	p.DeviceArn = service.GetDevicePoolArn(p.Client, p.ProjectArn, *devicePool)
+	if p.Config.DevicePoolArn != "" {
+		p.DeviceArn = p.Config.DevicePoolArn
+	} else {
+		p.DeviceArn = service.GetDevicePoolArn(p.Client, p.ProjectArn, p.Config.DevicePoolName)
+	}
 	appArn, url := service.CreateUpload(p.Client, p.ProjectArn, *appPath)
 	code := tools.UploadFile(*appPath, url)
 	if code != 200 {
@@ -81,6 +85,9 @@ func getConfig() *model.RunConfig {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		errors.Validate(err, "Can't read model file")
 		*configFile = model.Transform(bytes)
+	}
+	if configFile.DevicePoolArn == "" && configFile.DevicePoolName == "" {
+		configFile.DevicePoolName = *devicePool
 	}
 	if *runName != "" {
 		configFile.RunName = *runName

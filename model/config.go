@@ -23,8 +23,10 @@ var m = map[string]string{
 
 // RunConfig contains serialized representation of run model from JSON file
 type RunConfig struct {
-	RunName string `json:"runName,omitempty"`
-	Test    struct {
+	RunName        string `json:"runName,omitempty"`
+	DevicePoolArn  string `json:"devicePoolArn,omitempty"`
+	DevicePoolName string `json:"devicePoolName,omitempty"`
+	Test           struct {
 		Filter          string            `json:"filter,omitempty"`
 		Parameters      map[string]string `json:"parameters,omitempty"`
 		TestPackageArn  string            `json:"testPackageArn,omitempty"`

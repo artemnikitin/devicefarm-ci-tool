@@ -55,6 +55,8 @@ Example of config:
 ```json
 {
    "runName":"name",
+   "devicePoolArn":"ARN",
+   "devicePoolName":"Top Devices",
    "test":{
       "type":"BUILTIN_FUZZ|BUILTIN_EXPLORER|APPIUM_JAVA_JUNIT|APPIUM_JAVA_TESTNG|APPIUM_PYTHON|APPIUM_WEB_JAVA_JUNIT|APPIUM_WEB_JAVA_TESTNG|APPIUM_WEB_PYTHON|CALABASH|INSTRUMENTATION|UIAUTOMATION|UIAUTOMATOR|XCTEST",
       "testPackageArn":"string",
