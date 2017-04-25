@@ -1,12 +1,10 @@
 package model
 
-import (
-	"github.com/aws/aws-sdk-go/service/devicefarm"
-)
+import "github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
 
 // RunParameters represents parameters for utility runtime
 type RunParameters struct {
-	Client     *devicefarm.DeviceFarm
+	Client     devicefarmiface.DeviceFarmAPI
 	Config     *RunConfig
 	Project    string
 	ProjectArn string

@@ -14,6 +14,7 @@ import (
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
+	"github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
 )
 
 var (
@@ -41,7 +42,7 @@ func main() {
 	runJob(getAWSClient(), getConfig())
 }
 
-func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
+func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
 	p := &model.RunParameters{
 		Client:  client,
 		Config:  config,
@@ -98,7 +99,7 @@ func getConfig() *model.RunConfig {
 	return configFile
 }
 
-func getAWSClient() *devicefarm.DeviceFarm {
+func getAWSClient() devicefarmiface.DeviceFarmAPI {
 	config := awsconfig.New()
 	if *config.Region != "us-west-2" {
 		config.WithRegion("us-west-2")

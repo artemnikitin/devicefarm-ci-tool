@@ -5,9 +5,10 @@ import (
 
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
+	"github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
 )
 
-func populateResult(tests chan *model.FailedTest, client *devicefarm.DeviceFarm) []*model.FailedTest {
+func populateResult(tests chan *model.FailedTest, client devicefarmiface.DeviceFarmAPI) []*model.FailedTest {
 	var m sync.Mutex
 	var wg sync.WaitGroup
 	var result []*model.FailedTest
@@ -38,7 +39,7 @@ func populateResult(tests chan *model.FailedTest, client *devicefarm.DeviceFarm)
 	return result
 }
 
-func getListOfFailedTestsFromSuite(client *devicefarm.DeviceFarm, suitesArn []string, device string, os string) chan *model.FailedTest {
+func getListOfFailedTestsFromSuite(client devicefarmiface.DeviceFarmAPI, suitesArn []string, device string, os string) chan *model.FailedTest {
 	testch := make(chan *model.FailedTest, 100000)
 	var wg sync.WaitGroup
 	wg.Add(len(suitesArn))
