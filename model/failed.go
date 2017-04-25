@@ -2,6 +2,7 @@ package model
 
 import "bytes"
 
+// FailedTest represents info about failed test
 type FailedTest struct {
 	ARN      string
 	Class    string
@@ -13,6 +14,7 @@ type FailedTest struct {
 	VideoURL string
 }
 
+// ToString generate string from struct
 func (f *FailedTest) ToString() string {
 	var buf bytes.Buffer
 	if f.Class != "" {
