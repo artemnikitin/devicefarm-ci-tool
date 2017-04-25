@@ -89,7 +89,7 @@ func uploadExtraData(p *model.RunParameters, result *devicefarm.ScheduleRunInput
 			if httpResponse != 200 {
 				log.Fatal("Can't upload test app")
 			}
-			WaitForAppProcessed(p.Client, arn)
+			WaitForAppProcessed(p.Client, arn, 5)
 			result.Configuration.ExtraDataPackageArn = aws.String(arn)
 			wg.Done()
 		}()
@@ -107,7 +107,7 @@ func uploadTestPackage(p *model.RunParameters, result *devicefarm.ScheduleRunInp
 			if httpResponse != 200 {
 				log.Fatal("Can't upload test app")
 			}
-			WaitForAppProcessed(p.Client, arn)
+			WaitForAppProcessed(p.Client, arn, 5)
 			result.Test.TestPackageArn = aws.String(arn)
 			wg.Done()
 		}()

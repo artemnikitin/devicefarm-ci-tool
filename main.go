@@ -58,7 +58,7 @@ func runJob(client *devicefarm.DeviceFarm, config *model.RunConfig) {
 		log.Fatal("Can't upload an app to Device Farm")
 	}
 	p.AppArn = appArn
-	service.WaitForAppProcessed(p.Client, p.AppArn)
+	service.WaitForAppProcessed(p.Client, p.AppArn, *checkEvery)
 	runArn, status := service.RunWithConfig(p)
 	statusCheck(status)
 	if *wait {

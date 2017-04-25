@@ -88,17 +88,18 @@ func RunWithConfig(p *model.RunParameters) (string, string) {
 }
 
 // WaitForAppProcessed wait while app be in status "SUCCEEDED"
-func WaitForAppProcessed(client *devicefarm.DeviceFarm, arn string) {
+func WaitForAppProcessed(client *devicefarm.DeviceFarm, arn string, timeout int) {
 	var counter int
+	limit := 300 / timeout
 	status := GetUploadStatus(client, arn)
 	for status != "SUCCEEDED" {
 		counter++
-		time.Sleep(time.Second * 2)
+		time.Sleep(time.Duration(timeout) * time.Second)
 		status = GetUploadStatus(client, arn)
 		if status == "FAILED" {
 			log.Fatal("Something went wrong with processing app for tests. Quit.")
 		}
-		if counter == 90 {
+		if counter == limit {
 			log.Fatal("App is still unprocessed. Quit.")
 		}
 	}
