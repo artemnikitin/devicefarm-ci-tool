@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
 )
 
-// RunParameters represents parameters for utility runtime
-type RunParameters struct {
+// DeviceFarmRun represents parameters for utility runtime
+type DeviceFarmRun struct {
 	Client     devicefarmiface.DeviceFarmAPI
 	Config     *model.RunConfig
 	Project    string
@@ -25,7 +25,7 @@ type RunParameters struct {
 }
 
 // GetProjectArn returns project ARN by project name
-func (p *RunParameters) GetProjectArn() string {
+func (p *DeviceFarmRun) GetProjectArn() string {
 	var arn string
 	params := &devicefarm.ListProjectsInput{}
 	resp, err := p.Client.ListProjects(params)
@@ -40,7 +40,7 @@ func (p *RunParameters) GetProjectArn() string {
 }
 
 // CreateUpload creates pre-signed S3 URL for upload
-func (p *RunParameters) CreateUpload(arn, appPath string) (string, string) {
+func (p *DeviceFarmRun) CreateUpload(arn, appPath string) (string, string) {
 	var appType string
 	if strings.HasSuffix(appPath, ".apk") {
 		appType = "ANDROID_APP"
@@ -51,7 +51,7 @@ func (p *RunParameters) CreateUpload(arn, appPath string) (string, string) {
 }
 
 // CreateUploadWithType creates upload with specific type
-func (p *RunParameters) CreateUploadWithType(arn, appPath, uploadType string) (string, string) {
+func (p *DeviceFarmRun) CreateUploadWithType(arn, appPath, uploadType string) (string, string) {
 	return internalCreateUpload(p.Client, arn, appPath, uploadType)
 }
 
@@ -70,7 +70,7 @@ func internalCreateUpload(client devicefarmiface.DeviceFarmAPI, arn, appPath, ap
 }
 
 // GetDevicePoolArn returns device pool ARN by device pool name
-func (p *RunParameters) GetDevicePoolArn(devicePool string) string {
+func (p *DeviceFarmRun) GetDevicePoolArn(devicePool string) string {
 	var arn string
 	params := &devicefarm.ListDevicePoolsInput{
 		Arn: aws.String(p.ProjectArn),
@@ -87,7 +87,7 @@ func (p *RunParameters) GetDevicePoolArn(devicePool string) string {
 }
 
 // RunWithConfig will schedule run with setup from JSON model
-func (p *RunParameters) RunWithConfig() (string, string) {
+func (p *DeviceFarmRun) RunWithConfig() (string, string) {
 	params := createScheduleRunInput(p)
 	params.DevicePoolArn = aws.String(p.DeviceArn)
 	params.AppArn = aws.String(p.AppArn)
@@ -99,7 +99,7 @@ func (p *RunParameters) RunWithConfig() (string, string) {
 }
 
 // WaitForAppProcessed wait while app be in status "SUCCEEDED"
-func (p *RunParameters) WaitForAppProcessed(arn string, timeout int) {
+func (p *DeviceFarmRun) WaitForAppProcessed(arn string, timeout int) {
 	var counter int
 	limit := 300 / timeout
 	status := p.GetUploadStatus(arn)
@@ -117,7 +117,7 @@ func (p *RunParameters) WaitForAppProcessed(arn string, timeout int) {
 }
 
 // GetUploadStatus returns status of upload file
-func (p *RunParameters) GetUploadStatus(arn string) string {
+func (p *DeviceFarmRun) GetUploadStatus(arn string) string {
 	params := &devicefarm.GetUploadInput{
 		Arn: aws.String(arn),
 	}
@@ -128,7 +128,7 @@ func (p *RunParameters) GetUploadStatus(arn string) string {
 }
 
 // WaitForRunEnds for run to finish and returns it's result
-func (p *RunParameters) WaitForRunEnds(arn string, checkEvery int) string {
+func (p *DeviceFarmRun) WaitForRunEnds(arn string, checkEvery int) string {
 	status, result := p.GetStatusOfRun(arn)
 	for status != "COMPLETED" {
 		log.Println("Waiting for run to finish...")
@@ -140,7 +140,7 @@ func (p *RunParameters) WaitForRunEnds(arn string, checkEvery int) string {
 }
 
 // GetStatusOfRun returns status and result of run specified by ARN
-func (p *RunParameters) GetStatusOfRun(arn string) (string, string) {
+func (p *DeviceFarmRun) GetStatusOfRun(arn string) (string, string) {
 	params := &devicefarm.GetRunInput{
 		Arn: aws.String(arn),
 	}
@@ -150,7 +150,7 @@ func (p *RunParameters) GetStatusOfRun(arn string) (string, string) {
 }
 
 // GetListOfFailedTests returns list of failed test for a specified run with additional info
-func (p *RunParameters) GetListOfFailedTests(arn string) []*model.FailedTest {
+func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
 	var wg sync.WaitGroup
 	var m sync.Mutex
 	var result []*model.FailedTest

@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
-func createScheduleRunInput(p *RunParameters) *devicefarm.ScheduleRunInput {
+func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 	var wg sync.WaitGroup
 	result := &devicefarm.ScheduleRunInput{
 		ProjectArn: aws.String(p.ProjectArn),
@@ -79,7 +79,7 @@ func stringToBool(str string) bool {
 	return b
 }
 
-func uploadExtraData(p *RunParameters, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
+func uploadExtraData(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	if p.Config.AdditionalData.ExtraDataPackageArn == "" && p.Config.AdditionalData.ExtraDataPackagePath != "" {
 		wg.Add(1)
 		go func() {
@@ -96,7 +96,7 @@ func uploadExtraData(p *RunParameters, result *devicefarm.ScheduleRunInput, wg *
 	}
 }
 
-func uploadTestPackage(p *RunParameters, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
+func uploadTestPackage(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	if p.Config.Test.TestPackageArn == "" && p.Config.Test.TestPackagePath != "" {
 		wg.Add(1)
 		go func() {
