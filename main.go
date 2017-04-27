@@ -48,16 +48,18 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
 		Config:  config,
 		Project: *project,
 	}
-	svc.ProjectArn = svc.GetProjectArn()
-	if svc.ProjectArn == "" {
+	if svc.GetProjectArn() == "" {
 		log.Fatal("Application finished, because it can't retrieve project ARN")
 	}
-	if svc.Config.DevicePoolArn != "" {
+
+	/*if svc.Config.DevicePoolArn != "" {
 		svc.DeviceArn = svc.Config.DevicePoolArn
 	} else {
 		svc.DeviceArn = svc.GetDevicePoolArn(svc.Config.DevicePoolName)
-	}
-	appArn, url := svc.CreateUpload(svc.ProjectArn, *appPath)
+	}*/
+	svc.GetDevicePoolArn(svc.Config.DevicePoolName)
+
+	appArn, url := svc.CreateUpload(*appPath)
 	code := tools.UploadFile(*appPath, url)
 	if code != 200 {
 		log.Fatal("Can't upload an app to Device Farm")

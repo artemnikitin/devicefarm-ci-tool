@@ -36,18 +36,19 @@ func (p *DeviceFarmRun) GetProjectArn() string {
 		}
 	}
 	log.Println("Project ARN:", arn)
+	p.ProjectArn = arn
 	return arn
 }
 
 // CreateUpload creates pre-signed S3 URL for upload
-func (p *DeviceFarmRun) CreateUpload(arn, appPath string) (string, string) {
+func (p *DeviceFarmRun) CreateUpload(appPath string) (string, string) {
 	var appType string
 	if strings.HasSuffix(appPath, ".apk") {
-		appType = "ANDROID_APP"
+		appType = devicefarm.UploadTypeAndroidApp
 	} else {
-		appType = "IOS_APP"
+		appType = devicefarm.UploadTypeIosApp
 	}
-	return internalCreateUpload(p.Client, arn, appPath, appType)
+	return internalCreateUpload(p.Client, p.ProjectArn, appPath, appType)
 }
 
 // CreateUploadWithType creates upload with specific type
@@ -71,6 +72,9 @@ func internalCreateUpload(client devicefarmiface.DeviceFarmAPI, arn, appPath, ap
 
 // GetDevicePoolArn returns device pool ARN by device pool name
 func (p *DeviceFarmRun) GetDevicePoolArn(devicePool string) string {
+	if p.Config.DevicePoolArn != "" {
+		return p.Config.DevicePoolArn
+	}
 	var arn string
 	params := &devicefarm.ListDevicePoolsInput{
 		Arn: aws.String(p.ProjectArn),
@@ -83,6 +87,8 @@ func (p *DeviceFarmRun) GetDevicePoolArn(devicePool string) string {
 		}
 	}
 	log.Println("Device pool ARN:", arn)
+	p.DeviceArn = arn
+	p.Config.DevicePoolArn = arn
 	return arn
 }
 
