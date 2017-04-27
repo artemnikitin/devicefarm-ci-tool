@@ -102,7 +102,7 @@ func TestStringToBool(t *testing.T) {
 
 func create(bytes []byte) *devicefarm.ScheduleRunInput {
 	cf := model.Transform(bytes)
-	p := &model.RunParameters{
+	p := &DeviceFarmRun{
 		Client:  client,
 		Config:  &cf,
 		Project: "232323",

@@ -43,34 +43,36 @@ func main() {
 }
 
 func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
-	p := &model.RunParameters{
+	svc := &service.DeviceFarmRun{
 		Client:  client,
 		Config:  config,
 		Project: *project,
 	}
-	p.ProjectArn = service.GetProjectArn(p.Client, p.Project)
-	if p.ProjectArn == "" {
+	if svc.GetProjectArn() == "" {
 		log.Fatal("Application finished, because it can't retrieve project ARN")
 	}
-	if p.Config.DevicePoolArn != "" {
-		p.DeviceArn = p.Config.DevicePoolArn
+
+	/*if svc.Config.DevicePoolArn != "" {
+		svc.DeviceArn = svc.Config.DevicePoolArn
 	} else {
-		p.DeviceArn = service.GetDevicePoolArn(p.Client, p.ProjectArn, p.Config.DevicePoolName)
-	}
-	appArn, url := service.CreateUpload(p.Client, p.ProjectArn, *appPath)
+		svc.DeviceArn = svc.GetDevicePoolArn(svc.Config.DevicePoolName)
+	}*/
+	svc.GetDevicePoolArn(svc.Config.DevicePoolName)
+
+	appArn, url := svc.CreateUpload(*appPath)
 	code := tools.UploadFile(*appPath, url)
 	if code != 200 {
 		log.Fatal("Can't upload an app to Device Farm")
 	}
-	p.AppArn = appArn
-	service.WaitForAppProcessed(p.Client, p.AppArn, *checkEvery)
-	runArn, status := service.RunWithConfig(p)
+	svc.AppArn = appArn
+	svc.WaitForAppProcessed(svc.AppArn, *checkEvery)
+	runArn, status := svc.RunWithConfig()
 	statusCheck(status)
 	if *wait {
-		result := service.WaitForRunEnds(p.Client, runArn, *checkEvery)
+		result := svc.WaitForRunEnds(runArn, *checkEvery)
 		printReportURL(runArn)
 		if result != "PASSED" {
-			fails := service.GetListOfFailedTests(client, runArn)
+			fails := svc.GetListOfFailedTests(runArn)
 			log.Printf("There are %d test fails, check it out!\n", len(fails))
 			for i := 0; i < len(fails); i++ {
 				fmt.Println(fails[i].ToString())

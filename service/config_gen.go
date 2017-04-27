@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
-func createScheduleRunInput(p *model.RunParameters) *devicefarm.ScheduleRunInput {
+func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 	var wg sync.WaitGroup
 	result := &devicefarm.ScheduleRunInput{
 		ProjectArn: aws.String(p.ProjectArn),
@@ -79,35 +79,35 @@ func stringToBool(str string) bool {
 	return b
 }
 
-func uploadExtraData(p *model.RunParameters, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
+func uploadExtraData(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	if p.Config.AdditionalData.ExtraDataPackageArn == "" && p.Config.AdditionalData.ExtraDataPackagePath != "" {
 		wg.Add(1)
 		go func() {
 			log.Println("Prepare extra data for uploading...")
-			arn, url := CreateUploadWithType(p.Client, p.ProjectArn, p.Config.AdditionalData.ExtraDataPackagePath, "EXTERNAL_DATA")
+			arn, url := p.CreateUploadWithType(p.ProjectArn, p.Config.AdditionalData.ExtraDataPackagePath, "EXTERNAL_DATA")
 			httpResponse := tools.UploadFile(p.Config.AdditionalData.ExtraDataPackagePath, url)
 			if httpResponse != 200 {
 				log.Fatal("Can't upload test app")
 			}
-			WaitForAppProcessed(p.Client, arn, 5)
+			p.WaitForAppProcessed(arn, 5)
 			result.Configuration.ExtraDataPackageArn = aws.String(arn)
 			wg.Done()
 		}()
 	}
 }
 
-func uploadTestPackage(p *model.RunParameters, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
+func uploadTestPackage(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	if p.Config.Test.TestPackageArn == "" && p.Config.Test.TestPackagePath != "" {
 		wg.Add(1)
 		go func() {
 			log.Println("Prepare tests for uploading...")
 			t := model.GetUploadTypeForTest(p.Config.Test.Type)
-			arn, url := CreateUploadWithType(p.Client, p.ProjectArn, p.Config.Test.TestPackagePath, t)
+			arn, url := p.CreateUploadWithType(p.ProjectArn, p.Config.Test.TestPackagePath, t)
 			httpResponse := tools.UploadFile(p.Config.Test.TestPackagePath, url)
 			if httpResponse != 200 {
 				log.Fatal("Can't upload test app")
 			}
-			WaitForAppProcessed(p.Client, arn, 5)
+			p.WaitForAppProcessed(arn, 5)
 			result.Test.TestPackageArn = aws.String(arn)
 			wg.Done()
 		}()
