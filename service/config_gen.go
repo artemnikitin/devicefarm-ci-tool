@@ -67,6 +67,9 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 	} else {
 		uploadExtraData(p, result, &wg)
 	}
+	if p.Config.ExecutionConfiguration.JobTimeoutMinutes != 0 {
+		result.ExecutionConfiguration.JobTimeoutMinutes = aws.Int64(int64(p.Config.ExecutionConfiguration.JobTimeoutMinutes))
+	}
 	wg.Wait()
 	return result
 }
