@@ -20,7 +20,7 @@ func GetFileName(path string) string {
 		return path
 	}
 	pos := strings.LastIndex(path, "/")
-	return string(path[pos+1:])
+	return path[pos+1:]
 }
 
 // GenerateReportURL generate URL to test report from ARN
