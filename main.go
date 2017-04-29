@@ -48,15 +48,11 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
 		Config:  config,
 		Project: *project,
 	}
+
 	if svc.GetProjectArn() == "" {
 		log.Fatal("Application finished, because it can't retrieve project ARN")
 	}
 
-	/*if svc.Config.DevicePoolArn != "" {
-		svc.DeviceArn = svc.Config.DevicePoolArn
-	} else {
-		svc.DeviceArn = svc.GetDevicePoolArn(svc.Config.DevicePoolName)
-	}*/
 	svc.GetDevicePoolArn(svc.Config.DevicePoolName)
 
 	appArn, url := svc.CreateUpload(*appPath)
@@ -64,21 +60,28 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
 	if code != 200 {
 		log.Fatal("Can't upload an app to Device Farm")
 	}
+
 	svc.AppArn = appArn
 	svc.WaitForAppProcessed(svc.AppArn, *checkEvery)
+
 	runArn, status := svc.RunWithConfig()
 	statusCheck(status)
+
 	if *wait {
 		result := svc.WaitForRunEnds(runArn, *checkEvery)
-		printReportURL(runArn)
 		if result != devicefarm.ExecutionResultPassed {
 			fails := svc.GetListOfFailedTests(runArn)
 			log.Printf("There are %d test fails, check it out!\n", len(fails))
 			for i := 0; i < len(fails); i++ {
 				fmt.Println(fails[i].ToString())
 			}
+			printReportURL(runArn)
 			os.Exit(1)
+		} else {
+			printReportURL(runArn)
 		}
+	} else {
+		printReportURL(runArn)
 	}
 }
 
