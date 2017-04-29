@@ -1,6 +1,8 @@
 package service
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
@@ -198,8 +200,27 @@ func (c *mockClient) ListArtifactsRequest(*devicefarm.ListArtifactsInput) (*requ
 	return nil, nil
 }
 
-func (c *mockClient) ListArtifacts(*devicefarm.ListArtifactsInput) (*devicefarm.ListArtifactsOutput, error) {
-	return nil, nil
+func (c *mockClient) ListArtifacts(input *devicefarm.ListArtifactsInput) (*devicefarm.ListArtifactsOutput, error) {
+	var res *devicefarm.ListArtifactsOutput
+	if strings.Contains(*input.Arn, "fail") {
+		res = &devicefarm.ListArtifactsOutput{
+			Artifacts: []*devicefarm.Artifact{
+				{
+					Arn:  aws.String(""),
+					Type: aws.String(devicefarm.ArtifactTypeUnknown),
+				},
+			},
+		}
+	} else {
+		res = &devicefarm.ListArtifactsOutput{
+			Artifacts: []*devicefarm.Artifact{
+				{
+					Arn: aws.String(""),
+				},
+			},
+		}
+	}
+	return res, nil
 }
 
 func (c *mockClient) ListArtifactsPages(*devicefarm.ListArtifactsInput, func(*devicefarm.ListArtifactsOutput, bool) bool) error {
@@ -254,7 +275,19 @@ func (c *mockClient) ListJobsRequest(*devicefarm.ListJobsInput) (*request.Reques
 }
 
 func (c *mockClient) ListJobs(*devicefarm.ListJobsInput) (*devicefarm.ListJobsOutput, error) {
-	return nil, nil
+	res := &devicefarm.ListJobsOutput{
+		Jobs: []*devicefarm.Job{
+			{
+				Arn:  aws.String(""),
+				Name: aws.String(""),
+				Device: &devicefarm.Device{
+					Platform: aws.String(""),
+					Os:       aws.String(""),
+				},
+			},
+		},
+	}
+	return res, nil
 }
 
 func (c *mockClient) ListJobsPages(*devicefarm.ListJobsInput, func(*devicefarm.ListJobsOutput, bool) bool) error {
@@ -319,7 +352,27 @@ func (c *mockClient) ListSuitesRequest(*devicefarm.ListSuitesInput) (*request.Re
 }
 
 func (c *mockClient) ListSuites(*devicefarm.ListSuitesInput) (*devicefarm.ListSuitesOutput, error) {
-	return nil, nil
+	var res *devicefarm.ListSuitesOutput
+	if c.Failed {
+		res = &devicefarm.ListSuitesOutput{
+			Suites: []*devicefarm.Suite{
+				{
+					Arn:    aws.String("fail"),
+					Result: aws.String(devicefarm.ExecutionResultFailed),
+				},
+			},
+		}
+	} else {
+		res = &devicefarm.ListSuitesOutput{
+			Suites: []*devicefarm.Suite{
+				{
+					Arn:    aws.String(""),
+					Result: aws.String(devicefarm.ExecutionResultPassed),
+				},
+			},
+		}
+	}
+	return res, nil
 }
 
 func (c *mockClient) ListSuitesPages(*devicefarm.ListSuitesInput, func(*devicefarm.ListSuitesOutput, bool) bool) error {
@@ -330,8 +383,33 @@ func (c *mockClient) ListTestsRequest(*devicefarm.ListTestsInput) (*request.Requ
 	return nil, nil
 }
 
-func (c *mockClient) ListTests(*devicefarm.ListTestsInput) (*devicefarm.ListTestsOutput, error) {
-	return nil, nil
+func (c *mockClient) ListTests(input *devicefarm.ListTestsInput) (*devicefarm.ListTestsOutput, error) {
+	var res *devicefarm.ListTestsOutput
+	if *input.Arn == "fail" {
+		res = &devicefarm.ListTestsOutput{
+			Tests: []*devicefarm.Test{
+				{
+					Arn:     aws.String("fail 1"),
+					Message: aws.String("Fail :("),
+					Result:  aws.String(devicefarm.ExecutionResultFailed),
+				},
+				{
+					Arn:     aws.String("fail 2"),
+					Message: aws.String("Fail :("),
+					Result:  aws.String(devicefarm.ExecutionResultFailed),
+				},
+			},
+		}
+	} else {
+		res = &devicefarm.ListTestsOutput{
+			Tests: []*devicefarm.Test{
+				{
+					Arn: aws.String(""),
+				},
+			},
+		}
+	}
+	return res, nil
 }
 
 func (c *mockClient) ListTestsPages(*devicefarm.ListTestsInput, func(*devicefarm.ListTestsOutput, bool) bool) error {

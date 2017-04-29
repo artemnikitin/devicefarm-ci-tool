@@ -140,3 +140,17 @@ func TestGetStatusOfRunFailed(t *testing.T) {
 		t.Error("Result should be empty")
 	}
 }
+
+func TestGetListOfFailedTests(t *testing.T) {
+	failed := testRun.GetListOfFailedTests("")
+	if len(failed) != 0 {
+		t.Error("List of failed tests should be 0!")
+	}
+}
+
+func TestGetListOfFailedTestsMoreThan0(t *testing.T) {
+	failed := testRunFailed.GetListOfFailedTests("")
+	if len(failed) != 2 {
+		t.Error("List of failed tests should be 2!")
+	}
+}
