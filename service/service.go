@@ -109,11 +109,11 @@ func (p *DeviceFarmRun) WaitForAppProcessed(arn string, timeout int) {
 	var counter int
 	limit := 300 / timeout
 	status := p.GetUploadStatus(arn)
-	for status != "SUCCEEDED" {
+	for status != devicefarm.UploadStatusSucceeded {
 		counter++
 		time.Sleep(time.Duration(timeout) * time.Second)
 		status = p.GetUploadStatus(arn)
-		if status == "FAILED" {
+		if status == devicefarm.UploadStatusFailed {
 			log.Fatal("Something went wrong with processing app for tests. Quit.")
 		}
 		if counter == limit {
@@ -136,7 +136,7 @@ func (p *DeviceFarmRun) GetUploadStatus(arn string) string {
 // WaitForRunEnds for run to finish and returns it's result
 func (p *DeviceFarmRun) WaitForRunEnds(arn string, checkEvery int) string {
 	status, result := p.GetStatusOfRun(arn)
-	for status != "COMPLETED" {
+	for status != devicefarm.ExecutionStatusCompleted {
 		log.Println("Waiting for run to finish...")
 		time.Sleep(time.Duration(checkEvery) * time.Second)
 		status, result = p.GetStatusOfRun(arn)

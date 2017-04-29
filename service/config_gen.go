@@ -55,7 +55,7 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 	if p.Config.Test.Type != "" {
 		result.Test.Type = aws.String(p.Config.Test.Type)
 	} else {
-		result.Test.Type = aws.String("BUILTIN_FUZZ")
+		result.Test.Type = aws.String(devicefarm.TestTypeBuiltinFuzz)
 	}
 	if p.Config.Test.TestPackageArn != "" {
 		result.Test.TestPackageArn = aws.String(p.Config.Test.TestPackageArn)

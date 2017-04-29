@@ -71,7 +71,7 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
 	if *wait {
 		result := svc.WaitForRunEnds(runArn, *checkEvery)
 		printReportURL(runArn)
-		if result != "PASSED" {
+		if result != devicefarm.ExecutionResultPassed {
 			fails := svc.GetListOfFailedTests(runArn)
 			log.Printf("There are %d test fails, check it out!\n", len(fails))
 			for i := 0; i < len(fails); i++ {
@@ -111,7 +111,7 @@ func getAWSClient() devicefarmiface.DeviceFarmAPI {
 }
 
 func statusCheck(status string) {
-	if status == "SCHEDULING" {
+	if status == devicefarm.ExecutionStatusScheduling {
 		log.Println("Job is scheduled!")
 	} else {
 		log.Println("Status =", status)
