@@ -7,11 +7,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/artemnikitin/aws-config"
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
 	"github.com/artemnikitin/devicefarm-ci-tool/service"
 	"github.com/artemnikitin/devicefarm-ci-tool/tools"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 	"github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
@@ -105,12 +106,12 @@ func getConfig() *model.RunConfig {
 }
 
 func getAWSClient() devicefarmiface.DeviceFarmAPI {
-	config := awsconfig.New()
-	if *config.Region != "us-west-2" {
-		config.WithRegion("us-west-2")
-	}
-	session := session.New(config)
-	return devicefarm.New(session)
+	config := aws.NewConfig()
+	config.WithCredentials(credentials.NewEnvCredentials())
+	config.WithRegion("us-west-2")
+	ses, err := session.NewSession(config)
+	errors.Validate(err, "Can't create an AWS session")
+	return devicefarm.New(ses)
 }
 
 func statusCheck(status string) {
