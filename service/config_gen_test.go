@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/artemnikitin/aws-config"
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
-var client = devicefarm.New(session.New(awsconfig.New()))
+var client = devicefarm.New(session.New(aws.NewConfig()))
 
 func TestGenerateScheduleRunInputWithConfigurationBlock(t *testing.T) {
 	input := []byte(`{"runName":"name","test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}},"additionalData":{"extraDataPackageArn":"string","networkProfileArn":"string","locale":"string","location":{"latitude":1.222,"longitude":1.222},"radios":{"wifi":"","bluetooth":"true","nfc":"true","gps":"false"},"auxiliaryApps":["string1","string2"],"billingMethod":"METERED"}}`)
