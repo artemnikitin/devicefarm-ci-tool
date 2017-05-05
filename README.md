@@ -45,8 +45,6 @@ Example:`-config /path/to/config.json`
 Example:`-wait`  
 - ```checkEvery``` checks every X seconds for test run completion. Default value is 5 second.    
 Example: `-checkEvery 15`
-- ```-log``` enable AWS requests and responses logging.     
-Example:`-log`    
 
 #### Configuration file
 All parameters in the configuration file are optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
