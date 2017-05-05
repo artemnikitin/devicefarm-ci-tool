@@ -29,6 +29,11 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 				Longitude: aws.Float64(-122.3491),
 			},
 		},
+		ExecutionConfiguration: &devicefarm.ExecutionConfiguration{
+			JobTimeoutMinutes:  aws.Int64(60),
+			AccountsCleanup:    aws.Bool(false),
+			AppPackagesCleanup: aws.Bool(false),
+		},
 	}
 
 	result.Name = aws.String(p.Config.RunName)
@@ -67,8 +72,14 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 	} else {
 		uploadExtraData(p, result, &wg)
 	}
-	if p.Config.ExecutionConfiguration.JobTimeoutMinutes != 0 {
+	if p.Config.ExecutionConfiguration.JobTimeoutMinutes > 0 {
 		result.ExecutionConfiguration.JobTimeoutMinutes = aws.Int64(int64(p.Config.ExecutionConfiguration.JobTimeoutMinutes))
+	}
+	if p.Config.ExecutionConfiguration.AccountsCleanup {
+		result.ExecutionConfiguration.AccountsCleanup = aws.Bool(true)
+	}
+	if p.Config.ExecutionConfiguration.AppPackagesCleanup {
+		result.ExecutionConfiguration.AccountsCleanup = aws.Bool(true)
 	}
 	wg.Wait()
 	return result

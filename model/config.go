@@ -52,7 +52,9 @@ type RunConfig struct {
 		} `json:"radios,omitempty"`
 	} `json:"additionalData,omitempty"`
 	ExecutionConfiguration struct {
-		JobTimeoutMinutes int `json:"jobTimeoutMinutes,omitempty"`
+		JobTimeoutMinutes  int  `json:"jobTimeoutMinutes,omitempty"`
+		AccountsCleanup    bool `json:"accountsCleanup,omitempty"`
+		AppPackagesCleanup bool `json:"appPackagesCleanup,omitempty"`
 	} `json:"executionConfiguration,omitempty"`
 }
 

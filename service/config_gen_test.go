@@ -100,6 +100,20 @@ func TestStringToBool(t *testing.T) {
 	}
 }
 
+func TestCheckExecutionConfiguration(t *testing.T) {
+	input := []byte(`{"runName":"name"}`)
+	conf := create(input)
+	if *conf.ExecutionConfiguration.JobTimeoutMinutes != 60 {
+		t.Error("Job timeout by default should be nil")
+	}
+	if *conf.ExecutionConfiguration.AppPackagesCleanup {
+		t.Error("Cleanup by default should be false")
+	}
+	if *conf.ExecutionConfiguration.AccountsCleanup {
+		t.Error("Cleanup by default should be false")
+	}
+}
+
 func create(bytes []byte) *devicefarm.ScheduleRunInput {
 	cf := model.Transform(bytes)
 	p := &DeviceFarmRun{
