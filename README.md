@@ -89,7 +89,9 @@ Example of config:
       "billingMethod":"METERED|UNMETERED"
    },
    "executionConfiguration":{ 
-      "jobTimeoutMinutes":111
+      "jobTimeoutMinutes":111,
+      "accountsCleanup":false,
+      "appPackagesCleanup":false
    }
 }
 ```
