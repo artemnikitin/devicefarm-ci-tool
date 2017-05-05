@@ -79,7 +79,7 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 		result.ExecutionConfiguration.AccountsCleanup = aws.Bool(true)
 	}
 	if p.Config.ExecutionConfiguration.AppPackagesCleanup {
-		result.ExecutionConfiguration.AccountsCleanup = aws.Bool(true)
+		result.ExecutionConfiguration.AppPackagesCleanup = aws.Bool(true)
 	}
 	wg.Wait()
 	return result
