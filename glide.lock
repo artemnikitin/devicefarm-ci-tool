@@ -1,5 +1,5 @@
-hash: 4143bd57672bea7a321965d7605fcd050a87b6cfc293a19b5e8ba6df634bde3b
-updated: 2017-04-29T22:48:20.729289037+02:00
+hash: 870f82277d043c4455c5b21eb54e422d0666a8354f9d05486236775d85470fab
+updated: 2017-05-05T22:57:34.819084692+02:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 0dbc446aca87aebb6e0a24509b59bafc0e3ec0ae
@@ -33,6 +33,8 @@ imports:
   - service/devicefarm
   - service/devicefarm/devicefarmiface
   - service/sts
+- name: github.com/fatih/structs
+  version: a720dfa8df582c51dee1b36feabb906bde1588bd
 - name: github.com/go-ini/ini
   version: afbd495e5aaea13597b5e14fe514ddeaa4d76fc3
   repo: https://github.com/go-ini/ini
