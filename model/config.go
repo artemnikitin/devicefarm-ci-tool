@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
+	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
 var m = map[string]string{
@@ -23,47 +24,26 @@ var m = map[string]string{
 
 // RunConfig contains serialized representation of run model from JSON file
 type RunConfig struct {
-	RunName        string `json:"runName,omitempty"`
-	DevicePoolArn  string `json:"devicePoolArn,omitempty"`
-	DevicePoolName string `json:"devicePoolName,omitempty"`
-	Test           struct {
-		Filter          string            `json:"filter,omitempty"`
-		Parameters      map[string]string `json:"parameters,omitempty"`
-		TestPackageArn  string            `json:"testPackageArn,omitempty"`
-		TestPackagePath string            `json:"testPackagePath,omitempty"`
-		Type            string            `json:"type,omitempty"`
-	} `json:"test,omitempty"`
-	AdditionalData struct {
-		AuxiliaryApps        []string `json:"auxiliaryApps,omitempty"`
-		BillingMethod        string   `json:"billingMethod,omitempty"`
-		ExtraDataPackageArn  string   `json:"extraDataPackageArn,omitempty"`
-		ExtraDataPackagePath string   `json:"extraDataPackagePath,omitempty"`
-		Locale               string   `json:"locale,omitempty"`
-		Location             struct {
-			Latitude  float64 `json:"latitude,omitempty"`
-			Longitude float64 `json:"longitude,omitempty"`
-		} `json:"location,omitempty"`
-		NetworkProfileArn string `json:"networkProfileArn,omitempty"`
-		Radios            struct {
-			Bluetooth string `json:"bluetooth,omitempty"`
-			Gps       string `json:"gps,omitempty"`
-			Nfc       string `json:"nfc,omitempty"`
-			Wifi      string `json:"wifi,omitempty"`
-		} `json:"radios,omitempty"`
-	} `json:"additionalData,omitempty"`
-	ExecutionConfiguration struct {
-		JobTimeoutMinutes  int  `json:"jobTimeoutMinutes,omitempty"`
-		AccountsCleanup    bool `json:"accountsCleanup,omitempty"`
-		AppPackagesCleanup bool `json:"appPackagesCleanup,omitempty"`
-	} `json:"executionConfiguration,omitempty"`
+	Name                   string                               `json:"name,omitempty"`
+	ProjectArn             string                               `json:"projectArn,omitempty"`
+	ProjectName            string                               `json:"projectName,omitempty"`
+	AppArn                 string                               `json:"appArn,omitempty"`
+	AppPath                string                               `json:"appPath,omitempty"`
+	DevicePoolArn          string                               `json:"devicePoolArn,omitempty"`
+	DevicePoolName         string                               `json:"devicePoolName,omitempty"`
+	TestPackagePath        string                               `json:"testPackagePath,omitempty"`
+	ExtraDataPackagePath   string                               `json:"extraDataPackagePath,omitempty"`
+	Test                   *devicefarm.ScheduleRunTest          `json:"test,omitempty"`
+	Configuration          *devicefarm.ScheduleRunConfiguration `json:"configuration,omitempty"`
+	ExecutionConfiguration *devicefarm.ExecutionConfiguration   `json:"executionConfiguration,omitempty"`
 }
 
 // Transform unmarshall JSON model file to struct
-func Transform(jsonBytes []byte) RunConfig {
+func Transform(jsonBytes []byte) *RunConfig {
 	result := &RunConfig{}
 	err := json.Unmarshal(jsonBytes, result)
 	errors.Validate(err, "Can't read model file")
-	return *result
+	return result
 }
 
 // GetUploadTypeForTest return type of upload based on type of test

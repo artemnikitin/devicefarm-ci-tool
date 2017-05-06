@@ -5,15 +5,12 @@ import (
 	"testing"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/devicefarm"
+	"github.com/fatih/structs"
 )
 
-var client = devicefarm.New(session.New(aws.NewConfig()))
-
 func TestGenerateScheduleRunInputWithConfigurationBlock(t *testing.T) {
-	input := []byte(`{"runName":"name","test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}},"additionalData":{"extraDataPackageArn":"string","networkProfileArn":"string","locale":"string","location":{"latitude":1.222,"longitude":1.222},"radios":{"wifi":"","bluetooth":"true","nfc":"true","gps":"false"},"auxiliaryApps":["string1","string2"],"billingMethod":"METERED"}}`)
+	input := []byte(`{"name":"name","test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}},"configuration":{"extraDataPackageArn":"string","networkProfileArn":"string","locale":"string","location":{"latitude":1.222,"longitude":1.222},"radios":{"bluetooth":true,"nfc":true,"gps":false},"auxiliaryApps":["string1","string2"],"billingMethod":"METERED"}}`)
 	deviceFarmConfig := create(input)
 	if *deviceFarmConfig.Configuration.BillingMethod != "METERED" {
 		t.Error("billing method should be 'METERED'")
@@ -39,22 +36,20 @@ func TestGenerateScheduleRunInputWithConfigurationBlock(t *testing.T) {
 	if *deviceFarmConfig.Configuration.Radios.Gps {
 		t.Error("gps should be false")
 	}
-	if !*deviceFarmConfig.Configuration.Radios.Wifi {
-		t.Error("wifi should be true")
-	}
 }
 
 func TestGenerateScheduleRunInputFromEmptyConfig(t *testing.T) {
-	input := []byte(`{"runName":"name"}`)
+	input := []byte(`{"name":"name"}`)
 	conf := create(input)
 	if *conf.Name != "name" {
 		t.Error("Name should be equal 'name'")
 	}
-	if !*conf.Configuration.Radios.Bluetooth {
-		t.Error("Bluetooth should be true by default")
+	if *conf.Test.Type != devicefarm.TestTypeBuiltinFuzz {
+		t.Error("Test type should be set by default")
 	}
-	if *conf.Configuration.Location.Latitude != 47.6204 {
-		t.Error("Latitude should be 47.6204 by default")
+	s := structs.New(conf)
+	if !s.Field("Configuration").IsZero() {
+		t.Error("Block should be missed")
 	}
 }
 
@@ -81,44 +76,25 @@ func TestGenerateScheduleRunInputWithTestBlock(t *testing.T) {
 	}
 }
 
-func TestStringToBool(t *testing.T) {
-	cases := map[string]bool{
-		"true":             true,
-		"false":            false,
-		"TRUE":             true,
-		"FALSE":            false,
-		"TrUe":             true,
-		"FaLsE":            false,
-		"incorrect string": true,
-	}
-
-	for k, v := range cases {
-		res := stringToBool(k)
-		if res != v {
-			t.Errorf("For case: %s, actual: %t, expected: %t", k, res, v)
-		}
-	}
-}
-
-func TestCheckExecutionConfiguration(t *testing.T) {
-	input := []byte(`{"runName":"name"}`)
+func TestCheckExecutionConfigurationNonDefault(t *testing.T) {
+	input := []byte(`{"name":"name", "executionConfiguration":{"jobTimeoutMinutes":11,"accountsCleanup":true,"appPackagesCleanup":true}}`)
 	conf := create(input)
-	if *conf.ExecutionConfiguration.JobTimeoutMinutes != 60 {
-		t.Error("Job timeout by default should be nil")
+	if *conf.ExecutionConfiguration.JobTimeoutMinutes != 11 {
+		t.Error("Job timeout for initialized value should be initialized value")
 	}
-	if *conf.ExecutionConfiguration.AppPackagesCleanup {
-		t.Error("Cleanup by default should be false")
+	if !*conf.ExecutionConfiguration.AppPackagesCleanup {
+		t.Error("Cleanup for initialized value should be initialized value")
 	}
-	if *conf.ExecutionConfiguration.AccountsCleanup {
-		t.Error("Cleanup by default should be false")
+	if !*conf.ExecutionConfiguration.AccountsCleanup {
+		t.Error("Cleanup for initialized value should be initialized value")
 	}
 }
 
 func create(bytes []byte) *devicefarm.ScheduleRunInput {
 	cf := model.Transform(bytes)
 	p := &DeviceFarmRun{
-		Client:  client,
-		Config:  &cf,
+		Client:  &mockClient{},
+		Config:  cf,
 		Project: "232323",
 	}
 	deviceFarmConfig := createScheduleRunInput(p)

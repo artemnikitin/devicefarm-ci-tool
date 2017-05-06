@@ -91,16 +91,16 @@ func getConfig() *model.RunConfig {
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		errors.Validate(err, "Can't read model file")
-		*configFile = model.Transform(bytes)
+		configFile = model.Transform(bytes)
 	}
 	if configFile.DevicePoolArn == "" && configFile.DevicePoolName == "" {
 		configFile.DevicePoolName = *devicePool
 	}
 	if *runName != "" {
-		configFile.RunName = *runName
+		configFile.Name = *runName
 	}
 	if *testPath != "" {
-		configFile.Test.TestPackagePath = *testPath
+		configFile.TestPackagePath = *testPath
 	}
 	return configFile
 }

@@ -1,41 +1,35 @@
 package model
 
-import "testing"
+import (
+	"testing"
 
-func TestTransformSuccess(t *testing.T) {
+	"github.com/fatih/structs"
+)
+
+func TestTransformDefault(t *testing.T) {
 	config := createSmallTestData()
-	if config.RunName != "name" {
+	if config.Name != "name" {
 		t.Error("Can't transform JSON to struct")
 	}
-	if config.Test.Filter != "" {
+	s := structs.New(config)
+	if !s.Field("Test").IsZero() {
+		t.Error("JSON transformation to struct is incorrect")
+	}
+	if !s.Field("Configuration").IsZero() {
+		t.Error("JSON transformation to struct is incorrect")
+	}
+	if !s.Field("ExecutionConfiguration").IsZero() {
 		t.Error("JSON transformation to struct is incorrect")
 	}
 }
 
-func TestSizeOfArrays(t *testing.T) {
-	config := createSmallTestData()
-	if len(config.AdditionalData.AuxiliaryApps) != 0 {
-		t.Error("Size of AdditionalData.AuxiliaryApps should be 0")
-	}
-	if len(config.Test.Parameters) != 0 {
-		t.Error("Size of Test.Parameters should be 0")
-	}
-}
-
-func TestContainMapData(t *testing.T) {
+func TestTransformNonDefault(t *testing.T) {
 	config := createMapTestData()
-	if len(config.Test.Parameters) != 1 {
-		t.Error("Size of Test.Parameters should be 1")
+	if config.Name != "name" {
+		t.Error("Can't transform JSON to struct")
 	}
-	if config.Test.Parameters["key"] != "value" {
-		t.Error("Test.Parameters['key'] should return 'value'")
-	}
-}
-
-func TestDontContainMapData(t *testing.T) {
-	config := createSmallTestData()
-	if len(config.Test.Parameters) != 0 {
-		t.Error("Size of Test.Parameters should be 0")
+	if *config.ExecutionConfiguration.JobTimeoutMinutes != 11 {
+		t.Error("Can't properly initialize config")
 	}
 }
 
@@ -53,19 +47,12 @@ func TestGetUploadPositive(t *testing.T) {
 	}
 }
 
-func TestExecutionConfiguration(t *testing.T) {
-	config := createMapTestData()
-	if config.ExecutionConfiguration.JobTimeoutMinutes != 0 {
-		t.Error("By default timeout should be 0")
-	}
-}
-
-func createSmallTestData() RunConfig {
-	json := []byte(`{"runName":"name"}`)
+func createSmallTestData() *RunConfig {
+	json := []byte(`{"name":"name"}`)
 	return Transform(json)
 }
 
-func createMapTestData() RunConfig {
-	json := []byte(`{"runName":"name","test":{"parameters":{"key":"value"}}}`)
+func createMapTestData() *RunConfig {
+	json := []byte(`{"name":"name","executionConfiguration":{"jobTimeoutMinutes":11,"accountsCleanup":true,"appPackagesCleanup":true}}`)
 	return Transform(json)
 }
