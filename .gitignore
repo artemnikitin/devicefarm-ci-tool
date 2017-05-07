@@ -29,3 +29,6 @@ _testmain.go
 *.json
 *.txt
 *.apk
+
+# Coverage data
+*.out
