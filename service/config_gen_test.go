@@ -196,7 +196,7 @@ func TestUploadExtraData(t *testing.T) {
 			s := structs.New(conf)
 			if v.expectedARN == "" {
 				f, ok := s.FieldOk("Configuration")
-				if ok && !f.IsZero(){
+				if ok && !f.IsZero() {
 					f, ok = f.FieldOk("ExtraDataPackageArn")
 					if ok && !f.IsZero() {
 						t.Fatalf("Test:%s\n ExtraDataPackageArn shouldn't be presented if it's not expected", v.name)
