@@ -33,10 +33,10 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 	v, ok = config.FieldOk("Test")
 	if ok && !v.IsZero() {
 		result.Test = p.Config.Test
-		arn, arnOK := v.FieldOk("TestPackageArn")
-		path, pathOK := config.FieldOk("TestPackagePath")
-		if ((arnOK && arn.IsZero()) || !arnOK) && pathOK && !path.IsZero() {
-			uploadTestPackage(p, result, &wg)
+		s := structs.New(result)
+		v, ok = s.Field("Test").FieldOk("Type")
+		if !ok || v.IsZero() {
+			result.Test.Type = aws.String(devicefarm.TestTypeBuiltinFuzz)
 		}
 	} else {
 		result.Test = &devicefarm.ScheduleRunTest{
@@ -44,12 +44,32 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 		}
 	}
 
+	s := structs.New(result)
+	v, ok = s.FieldOk("Test")
+	if ok {
+		arn, arnOK := v.FieldOk("TestPackageArn")
+		path, pathOK := config.FieldOk("TestPackagePath")
+		if ((arnOK && arn.IsZero()) || !arnOK) && pathOK && !path.IsZero() {
+			uploadTestPackage(p, result, &wg)
+		}
+	}
+
 	v, ok = config.FieldOk("Configuration")
 	if ok && !v.IsZero() {
 		result.Configuration = p.Config.Configuration
-		arn, arnOK := v.FieldOk("ExtraDataPackageArn")
-		path, pathOK := config.FieldOk("ExtraDataPackagePath")
-		if ((arnOK && arn.IsZero()) || !arnOK) && pathOK && !path.IsZero() {
+	}
+
+	s = structs.New(result)
+	path, pathOK := config.FieldOk("ExtraDataPackagePath")
+	if pathOK && !path.IsZero() {
+		v, ok = s.FieldOk("Configuration")
+		if ok && !v.IsZero() {
+			arn, arnOK := v.FieldOk("ExtraDataPackageArn")
+			if (arnOK && arn.IsZero()) || !arnOK {
+				uploadExtraData(p, result, &wg)
+			}
+		} else {
+			result.Configuration = &devicefarm.ScheduleRunConfiguration{}
 			uploadExtraData(p, result, &wg)
 		}
 	}
@@ -61,11 +81,11 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 func uploadExtraData(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
-		log.Println("Prepare extra data for uploading...")
+		log.Println("Preparing extra data for upload...")
 		arn, url := p.CreateUploadWithType(p.ProjectArn, p.Config.ExtraDataPackagePath, devicefarm.UploadTypeExternalData)
 		httpResponse := tools.UploadFile(p.Config.ExtraDataPackagePath, url)
 		if httpResponse != 200 {
-			log.Fatal("Can't upload test app")
+			log.Fatal("Can't upload extra data")
 		}
 		p.WaitForAppProcessed(arn, 5)
 		result.Configuration.ExtraDataPackageArn = aws.String(arn)
@@ -76,8 +96,8 @@ func uploadExtraData(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *
 func uploadTestPackage(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
-		log.Println("Prepare tests for uploading...")
-		t := model.GetUploadTypeForTest(*p.Config.Test.Type)
+		log.Println("Preparing tests for upload...")
+		t := model.GetUploadTypeForTest(*result.Test.Type)
 		arn, url := p.CreateUploadWithType(p.ProjectArn, p.Config.TestPackagePath, t)
 		httpResponse := tools.UploadFile(p.Config.TestPackagePath, url)
 		if httpResponse != 200 {

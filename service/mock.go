@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http/httptest"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -8,8 +9,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
+const uploadARN = "wefere3f3f33gv3fre3f3f3f3f3v34v3v43v433v34v43v34"
+
 type mockClient struct {
-	Failed bool
+	Failed     bool
+	UploadTest bool
+	FakeServer *httptest.Server
 }
 
 func (c *mockClient) CreateDevicePool(*devicefarm.CreateDevicePoolInput) (*devicefarm.CreateDevicePoolOutput, error) {
@@ -54,6 +59,16 @@ func (c *mockClient) CreateRemoteAccessSessionRequest(*devicefarm.CreateRemoteAc
 
 func (c *mockClient) CreateUpload(*devicefarm.CreateUploadInput) (*devicefarm.CreateUploadOutput, error) {
 	var res *devicefarm.CreateUploadOutput
+	if c.UploadTest {
+		res = &devicefarm.CreateUploadOutput{
+			Upload: &devicefarm.Upload{
+				Arn:  aws.String(uploadARN),
+				Url:  aws.String(c.FakeServer.URL),
+				Type: aws.String(devicefarm.UploadTypeIosApp),
+			},
+		}
+		return res, nil
+	}
 	if c.Failed {
 		res = &devicefarm.CreateUploadOutput{
 			Upload: &devicefarm.Upload{
@@ -283,8 +298,16 @@ func (c *mockClient) GetTestRequest(*devicefarm.GetTestInput) (*request.Request,
 	return nil, nil
 }
 
-func (c *mockClient) GetUpload(*devicefarm.GetUploadInput) (*devicefarm.GetUploadOutput, error) {
+func (c *mockClient) GetUpload(input *devicefarm.GetUploadInput) (*devicefarm.GetUploadOutput, error) {
 	var res *devicefarm.GetUploadOutput
+	if *input.Arn == uploadARN {
+		res = &devicefarm.GetUploadOutput{
+			Upload: &devicefarm.Upload{
+				Status: aws.String(devicefarm.UploadStatusSucceeded),
+			},
+		}
+		return res, nil
+	}
 	if c.Failed {
 		res = &devicefarm.GetUploadOutput{
 			Upload: &devicefarm.Upload{
