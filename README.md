@@ -49,7 +49,51 @@ Example: `-checkEvery 15`
 #### Configuration file
 All parameters in the configuration file are optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
 
-Example of config:
+Example of config (for current master):    
+```json
+{
+   "name": "string",
+   "projectArn": "string",
+   "projectName": "string",
+   "appArn": "string",
+   "appPath": "string",
+   "devicePoolArn": "string",
+   "devicePoolPath": "string",
+   "testPackagePath": "string",
+   "extraDataPackagePath": "string",
+   "configuration": { 
+      "auxiliaryApps": [ "string" ],
+      "billingMethod": "METERED|UNMETERED",
+      "extraDataPackageArn": "string",
+      "locale": "string",
+      "location": { 
+         "latitude": 11.11,
+         "longitude": 22.22
+      },
+      "networkProfileArn": "string",
+      "radios": { 
+         "bluetooth": true,
+         "gps": false,
+         "nfc": true,
+         "wifi": false
+      }
+   },
+   "executionConfiguration": { 
+      "accountsCleanup": false,
+      "appPackagesCleanup": true,
+      "jobTimeoutMinutes": 111
+   },
+   "test": { 
+      "filter": "string",
+      "parameters": { 
+         "string" : "string" 
+      },
+      "testPackageArn": "string",
+      "type": "BUILTIN_FUZZ|BUILTIN_EXPLORER|APPIUM_JAVA_JUNIT|APPIUM_JAVA_TESTNG|APPIUM_PYTHON|APPIUM_WEB_JAVA_JUNIT|APPIUM_WEB_JAVA_TESTNG|APPIUM_WEB_PYTHON|CALABASH|INSTRUMENTATION|UIAUTOMATION|UIAUTOMATOR|XCTEST"
+   }
+}
+```    
+Example of old config (for release 1.2.1):    
 ```json
 {
    "runName":"name",
