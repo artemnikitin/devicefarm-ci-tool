@@ -40,10 +40,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	runJob(getAWSClient(), getConfig())
+	failed, pass := runJob(getAWSClient(), getConfig())
+	if !pass {
+		log.Printf("There are %d test fails, check it out!\n", len(failed))
+		for i := 0; i < len(failed); i++ {
+			fmt.Println(failed[i].ToString())
+		}
+		os.Exit(1)
+	}
 }
 
-func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
+func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*model.FailedTest, bool) {
 	svc := &service.DeviceFarmRun{
 		Client:  client,
 		Config:  config,
@@ -68,22 +75,19 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) {
 	runArn, status := svc.RunWithConfig()
 	statusCheck(status)
 
+	pass := true
+	var failedTests []*model.FailedTest
+
 	if *wait {
 		result := svc.WaitForRunEnds(runArn, *checkEvery)
 		if result != devicefarm.ExecutionResultPassed {
-			fails := svc.GetListOfFailedTests(runArn)
-			log.Printf("There are %d test fails, check it out!\n", len(fails))
-			for i := 0; i < len(fails); i++ {
-				fmt.Println(fails[i].ToString())
-			}
-			printReportURL(runArn)
-			os.Exit(1)
-		} else {
-			printReportURL(runArn)
+			failedTests = svc.GetListOfFailedTests(runArn)
+			pass = false
 		}
-	} else {
-		printReportURL(runArn)
 	}
+
+	printReportURL(runArn)
+	return failedTests, pass
 }
 
 func getConfig() *model.RunConfig {

@@ -2,8 +2,6 @@ package service
 
 import (
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
@@ -14,7 +12,7 @@ import (
 
 func TestGenerateScheduleRunInputWithConfigurationBlock(t *testing.T) {
 	input := []byte(`{"name":"name","test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}},"configuration":{"extraDataPackageArn":"string","networkProfileArn":"string","locale":"string","location":{"latitude":1.222,"longitude":1.222},"radios":{"bluetooth":true,"nfc":true,"gps":false},"auxiliaryApps":["string1","string2"],"billingMethod":"METERED"}}`)
-	conf := createRun(input, &mockClient{})
+	conf := createRun(input, &MockClient{})
 	if *conf.Configuration.BillingMethod != "METERED" {
 		t.Error("billing method should be 'METERED'")
 	}
@@ -43,7 +41,7 @@ func TestGenerateScheduleRunInputWithConfigurationBlock(t *testing.T) {
 
 func TestGenerateScheduleRunInputFromEmptyConfig(t *testing.T) {
 	input := []byte(`{"name":"name"}`)
-	conf := createRun(input, &mockClient{})
+	conf := createRun(input, &MockClient{})
 	if *conf.Name != "name" {
 		t.Error("Name should be equal 'name'")
 	}
@@ -58,7 +56,7 @@ func TestGenerateScheduleRunInputFromEmptyConfig(t *testing.T) {
 
 func TestGenerateScheduleRunInputWithTestBlock(t *testing.T) {
 	input := []byte(`{"test":{"type":"string","testPackageArn":"string","filter":"string","parameters":{"key1":"value","key2":"value"}}}`)
-	conf := createRun(input, &mockClient{})
+	conf := createRun(input, &MockClient{})
 	if *conf.Test.Filter != "string" {
 		t.Error("test.filter should be 'string'")
 	}
@@ -81,7 +79,7 @@ func TestGenerateScheduleRunInputWithTestBlock(t *testing.T) {
 
 func TestCheckExecutionConfigurationNonDefault(t *testing.T) {
 	input := []byte(`{"name":"name", "executionConfiguration":{"jobTimeoutMinutes":11,"accountsCleanup":true,"appPackagesCleanup":true}}`)
-	conf := createRun(input, &mockClient{})
+	conf := createRun(input, &MockClient{})
 	if *conf.ExecutionConfiguration.JobTimeoutMinutes != 11 {
 		t.Error("Job timeout for initialized value should be initialized value")
 	}
@@ -94,10 +92,10 @@ func TestCheckExecutionConfigurationNonDefault(t *testing.T) {
 }
 
 func TestUploadTestPackage(t *testing.T) {
-	server := createServer()
+	server := CreateFakeServer()
 	defer server.Close()
 
-	client := &mockClient{
+	client := &MockClient{
 		UploadTest: true,
 		FakeServer: server,
 	}
@@ -115,7 +113,7 @@ func TestUploadTestPackage(t *testing.T) {
 		{
 			name:        "If test package path exists and no test ARN, then package should be upload and ARN generated",
 			jsonString:  []byte(`{"testPackagePath":"test.zzz"}`),
-			expectedARN: uploadARN,
+			expectedARN: UploadARN,
 		},
 		{
 			name:        "If both ARN and path presented, then ARN should be used",
@@ -149,10 +147,10 @@ func TestUploadTestPackage(t *testing.T) {
 }
 
 func TestUploadExtraData(t *testing.T) {
-	server := createServer()
+	server := CreateFakeServer()
 	defer server.Close()
 
-	client := &mockClient{
+	client := &MockClient{
 		UploadTest: true,
 		FakeServer: server,
 	}
@@ -170,7 +168,7 @@ func TestUploadExtraData(t *testing.T) {
 		{
 			name:        "If path exist and no ARN, then package should be upload and ARN generated",
 			jsonString:  []byte(`{"extraDataPackagePath":"test.zzz"}`),
-			expectedARN: uploadARN,
+			expectedARN: UploadARN,
 		},
 		{
 			name:        "If both ARN and path presented, then ARN should be used",
@@ -180,7 +178,7 @@ func TestUploadExtraData(t *testing.T) {
 		{
 			name:        "If path exist and no ARN, then package should be upload and ARN generated",
 			jsonString:  []byte(`{"extraDataPackagePath":"test.zzz", "configuration":{"locale":"en-US"}}`),
-			expectedARN: uploadARN,
+			expectedARN: UploadARN,
 		},
 		{
 			name:        "Both ARN and path missed, then no ARN should be presented",
@@ -225,11 +223,4 @@ func createRun(bytes []byte, client devicefarmiface.DeviceFarmAPI) *devicefarm.S
 		Project: "232323",
 	}
 	return createScheduleRunInput(p)
-}
-
-func createServer() *httptest.Server {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-	}))
-	return server
 }

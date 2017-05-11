@@ -6,12 +6,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 )
 
 func sendRequest(url string, file *io.Reader, info os.FileInfo) *http.Response {
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 10 * time.Minute,
+	}
 	request, err := http.NewRequest("PUT", url, *file)
 	errors.Validate(err, "Failed to create HTTP request")
 	request.Header.Add("Content-Type", "application/octet-stream")

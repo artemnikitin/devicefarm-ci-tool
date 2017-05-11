@@ -5,16 +5,17 @@ import (
 	"testing"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
+	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
 var (
 	testRun = &DeviceFarmRun{
-		Client:  &mockClient{},
+		Client:  &MockClient{},
 		Config:  &model.RunConfig{},
 		Project: os.Getenv("AWS_DEVICE_FARM_PROJECT"),
 	}
 	testRunFailed = &DeviceFarmRun{
-		Client: &mockClient{
+		Client: &MockClient{
 			Failed: true,
 		},
 		Config:  &model.RunConfig{},
@@ -116,7 +117,7 @@ func TestGetUploadStatusFailed(t *testing.T) {
 
 func TestWaitForRunEnds(t *testing.T) {
 	result := testRun.WaitForRunEnds("", 1)
-	if result != "ok" {
+	if result != devicefarm.ExecutionResultPassed {
 		t.Error("Result should be ok")
 	}
 }
