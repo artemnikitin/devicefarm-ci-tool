@@ -32,11 +32,24 @@ func TestRunJob(t *testing.T) {
 			failed:  []*model.FailedTest{{}, {}},
 			pass:    false,
 		},
+		{
+			name:    "Run with failed job because of infrastructure issues",
+			project: "test",
+			file:    "main_test.go",
+			config: &model.RunConfig{
+				Name: "AWSFail",
+			},
+			failed: []*model.FailedTest{},
+			pass:   false,
+		},
 	}
 
 	for _, v := range cases {
 		t.Run(v.name, func(t *testing.T) {
 			client := &service.MockClient{}
+			if v.config.Name == "AWSFail" {
+				client.AWSFail = true
+			}
 
 			client.FakeServer = service.CreateFakeServer()
 			defer client.FakeServer.Close()

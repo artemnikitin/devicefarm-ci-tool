@@ -24,6 +24,7 @@ func CreateFakeServer() *httptest.Server {
 type MockClient struct {
 	Failed     bool
 	UploadTest bool
+	AWSFail    bool
 	FakeServer *httptest.Server
 }
 
@@ -613,12 +614,21 @@ func (c *MockClient) ListSamplesPagesWithContext(aws.Context, *devicefarm.ListSa
 
 func (c *MockClient) ListSuites(*devicefarm.ListSuitesInput) (*devicefarm.ListSuitesOutput, error) {
 	var res *devicefarm.ListSuitesOutput
-	if c.Failed {
+	if c.Failed && !c.AWSFail {
 		res = &devicefarm.ListSuitesOutput{
 			Suites: []*devicefarm.Suite{
 				{
 					Arn:    aws.String("fail"),
 					Result: aws.String(devicefarm.ExecutionResultFailed),
+				},
+			},
+		}
+	} else if c.AWSFail {
+		res = &devicefarm.ListSuitesOutput{
+			Suites: []*devicefarm.Suite{
+				{
+					Arn:    aws.String("AWSFail"),
+					Result: aws.String(devicefarm.ExecutionResultSkipped),
 				},
 			},
 		}
@@ -662,6 +672,14 @@ func (c *MockClient) ListTests(input *devicefarm.ListTestsInput) (*devicefarm.Li
 					Arn:     aws.String("fail 2"),
 					Message: aws.String("Fail :("),
 					Result:  aws.String(devicefarm.ExecutionResultFailed),
+				},
+			},
+		}
+	} else if *input.Arn == "AWSFail" {
+		res = &devicefarm.ListTestsOutput{
+			Tests: []*devicefarm.Test{
+				{
+					Arn: aws.String("AWSFail"),
 				},
 			},
 		}
