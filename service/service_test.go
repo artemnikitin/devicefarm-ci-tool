@@ -12,7 +12,7 @@ var (
 	testRun = &DeviceFarmRun{
 		Client:  &MockClient{},
 		Config:  &model.RunConfig{},
-		Project: os.Getenv("AWS_DEVICE_FARM_PROJECT"),
+		Project: "test",
 	}
 	testRunFailed = &DeviceFarmRun{
 		Client: &MockClient{
