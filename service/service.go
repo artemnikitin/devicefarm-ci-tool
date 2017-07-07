@@ -156,10 +156,11 @@ func (p *DeviceFarmRun) GetStatusOfRun(arn string) (string, string) {
 }
 
 // GetListOfFailedTests returns list of failed test for a specified run with additional info
-func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
+func (p *DeviceFarmRun) GetListOfFailedTests(arn string) ([]*model.FailedTest, int) {
 	var wg sync.WaitGroup
 	var m sync.Mutex
-	var result []*model.FailedTest
+	var failedTests []*model.FailedTest
+	var greenTests int
 
 	jobs := getListOfJobsForRun(p.Client, arn)
 
@@ -171,11 +172,13 @@ func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
 
 			suites := getListOfSuitesForJob(p.Client, *jobs[i].Arn)
 			suitesArn := getListOfTestArnFromSuite(suites)
+			greenTemp := getNumberOfGreenTestsFromSuite(p.Client, suites)
 			tests := getListOfFailedTestsFromSuite(p.Client, suitesArn, device, os)
 			tempResult := populateResult(tests, p.Client)
 
 			m.Lock()
-			result = append(result, tempResult...)
+			failedTests = append(failedTests, tempResult...)
+			greenTests += greenTemp
 			m.Unlock()
 
 			wg.Done()
@@ -183,7 +186,7 @@ func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
 	}
 	wg.Wait()
 
-	return result
+	return failedTests, greenTests
 }
 
 func getListOfJobsForRun(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Job {

@@ -9,12 +9,14 @@ import (
 
 func TestRunJob(t *testing.T) {
 	cases := []struct {
-		name    string
-		project string
-		file    string
-		config  *model.RunConfig
-		failed  []*model.FailedTest
-		pass    bool
+		name              string
+		project           string
+		file              string
+		config            *model.RunConfig
+		failed            []*model.FailedTest
+		pass              bool
+		partlyUnavailable bool
+		fullyUnavailable  bool
 	}{
 		{
 			name:    "Success run",
@@ -42,6 +44,26 @@ func TestRunJob(t *testing.T) {
 			failed: []*model.FailedTest{},
 			pass:   false,
 		},
+		{
+			name:              "Run with some devices as unavailable",
+			project:           "test",
+			file:              "main_test.go",
+			config:            &model.RunConfig{},
+			failed:            []*model.FailedTest{},
+			pass:              true,
+			partlyUnavailable: true,
+		},
+		{
+			name:    "Run with all devices as unavailable",
+			project: "test",
+			file:    "main_test.go",
+			config: &model.RunConfig{
+				Name: "AWSFail",
+			},
+			failed:           []*model.FailedTest{},
+			pass:             false,
+			fullyUnavailable: true,
+		},
 	}
 
 	for _, v := range cases {
@@ -49,6 +71,12 @@ func TestRunJob(t *testing.T) {
 			client := &service.MockClient{}
 			if v.config.Name == "AWSFail" {
 				client.AWSFail = true
+			}
+			if v.partlyUnavailable {
+				client.PartlyUnavailableDevice = true
+			}
+			if v.fullyUnavailable {
+				client.FullUnavailableDevices = true
 			}
 
 			client.FakeServer = service.CreateFakeServer()

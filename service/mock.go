@@ -22,10 +22,12 @@ func CreateFakeServer() *httptest.Server {
 
 // MockClient mock for AWS Device Farm API
 type MockClient struct {
-	Failed     bool
-	UploadTest bool
-	AWSFail    bool
-	FakeServer *httptest.Server
+	Failed                  bool
+	UploadTest              bool
+	AWSFail                 bool
+	PartlyUnavailableDevice bool
+	FullUnavailableDevices  bool
+	FakeServer              *httptest.Server
 }
 
 func (c *MockClient) CreateDevicePool(*devicefarm.CreateDevicePoolInput) (*devicefarm.CreateDevicePoolOutput, error) {
@@ -456,6 +458,35 @@ func (c *MockClient) ListJobs(*devicefarm.ListJobsInput) (*devicefarm.ListJobsOu
 			},
 		},
 	}
+
+	if c.PartlyUnavailableDevice {
+		res.Jobs = append(res.Jobs, &devicefarm.Job{
+			Arn:  aws.String(""),
+			Name: aws.String(""),
+			Device: &devicefarm.Device{
+				Platform: aws.String(""),
+				Os:       aws.String(""),
+			},
+			Result: aws.String(devicefarm.ExecutionResultErrored),
+		})
+	}
+
+	if c.FullUnavailableDevices {
+		res = &devicefarm.ListJobsOutput{
+			Jobs: []*devicefarm.Job{
+				{
+					Arn:  aws.String(""),
+					Name: aws.String(""),
+					Device: &devicefarm.Device{
+						Platform: aws.String(""),
+						Os:       aws.String(""),
+					},
+					Result: aws.String(devicefarm.ExecutionResultErrored),
+				},
+			},
+		}
+	}
+
 	return res, nil
 }
 func (c *MockClient) ListJobsWithContext(aws.Context, *devicefarm.ListJobsInput, ...request.Option) (*devicefarm.ListJobsOutput, error) {
