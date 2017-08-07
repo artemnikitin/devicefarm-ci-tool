@@ -8,33 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface"
 )
 
-func getNumberOfGreenTestsFromSuite(client devicefarmiface.DeviceFarmAPI, suites []*devicefarm.Suite) int {
-	var m sync.Mutex
-	var wg sync.WaitGroup
-	var result int
-
-	wg.Add(len(suites))
-	for _, v := range suites {
-		go func(suite *devicefarm.Suite) {
-			defer wg.Done()
-			tests := getListOfTestForSuite(client, *suite.Arn)
-			for i := range tests {
-				res := *tests[i].Result == devicefarm.ExecutionResultPassed
-				excl1 := *tests[i].Name != "Setup Test"
-				excl2 := *tests[i].Name != "Teardown Test"
-				if res && excl1 && excl2 {
-					m.Lock()
-					result++
-					m.Unlock()
-				}
-			}
-		}(v)
-	}
-	wg.Wait()
-
-	return result
-}
-
 func populateResult(tests chan *model.FailedTest, client devicefarmiface.DeviceFarmAPI) []*model.FailedTest {
 	var m sync.Mutex
 	var wg sync.WaitGroup

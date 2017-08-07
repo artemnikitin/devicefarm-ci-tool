@@ -27,7 +27,7 @@ var (
 	configJSON               = flag.String("config", "", "Path to JSON config")
 	wait                     = flag.Bool("wait", false, "Wait for run end")
 	checkEvery               = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
-	ignoreUnavailableDevices = flag.Bool("iud", false, "Consider test run where one of devices failed as green")
+	ignoreUnavailableDevices = flag.Bool("ignoreUnavailableDevices", false, "Consider test run where one of devices failed as green")
 )
 
 func main() {
@@ -86,9 +86,13 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 	if *wait {
 		result := svc.WaitForRunEnds(runArn, *checkEvery)
 		if result != devicefarm.ExecutionResultPassed {
-			failed, green := svc.GetListOfFailedTests(runArn)
-			pass = makeBuildFailed(result, green, failed, *ignoreUnavailableDevices)
+			failed := svc.GetListOfFailedTests(runArn)
+			pass = makeBuildFailed(result, failed, *ignoreUnavailableDevices)
 		}
+	}
+
+	if *ignoreUnavailableDevices {
+		pass = svc.IsTestRunPassIgnoringUnavailableDevices(runArn)
 	}
 
 	printReportURL(runArn)
@@ -132,9 +136,9 @@ func statusCheck(status string) {
 	}
 }
 
-func makeBuildFailed(result string, green int, failed []*model.FailedTest, option bool) bool {
+func makeBuildFailed(result string, failed []*model.FailedTest, option bool) bool {
 	testResult := false
-	if result == devicefarm.ExecutionResultErrored && len(failed) == 0 && green > 0 && option {
+	if result == devicefarm.ExecutionResultErrored && len(failed) == 0 && option {
 		testResult = true
 	}
 	return testResult

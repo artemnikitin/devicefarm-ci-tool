@@ -156,11 +156,10 @@ func (p *DeviceFarmRun) GetStatusOfRun(arn string) (string, string) {
 }
 
 // GetListOfFailedTests returns list of failed test for a specified run with additional info
-func (p *DeviceFarmRun) GetListOfFailedTests(arn string) ([]*model.FailedTest, int) {
+func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
 	var wg sync.WaitGroup
 	var m sync.Mutex
 	var failedTests []*model.FailedTest
-	var greenTests int
 
 	jobs := getListOfJobsForRun(p.Client, arn)
 
@@ -172,13 +171,11 @@ func (p *DeviceFarmRun) GetListOfFailedTests(arn string) ([]*model.FailedTest, i
 
 			suites := getListOfSuitesForJob(p.Client, *jobs[i].Arn)
 			suitesArn := getListOfTestArnFromSuite(suites)
-			greenTemp := getNumberOfGreenTestsFromSuite(p.Client, suites)
 			tests := getListOfFailedTestsFromSuite(p.Client, suitesArn, device, os)
 			tempResult := populateResult(tests, p.Client)
 
 			m.Lock()
 			failedTests = append(failedTests, tempResult...)
-			greenTests += greenTemp
 			m.Unlock()
 
 			wg.Done()
@@ -186,7 +183,36 @@ func (p *DeviceFarmRun) GetListOfFailedTests(arn string) ([]*model.FailedTest, i
 	}
 	wg.Wait()
 
-	return failedTests, greenTests
+	return failedTests
+}
+
+// IsTestRunPassIgnoringUnavailableDevices checks if there was a situation then test runs on some devices passes,
+// but some devices weren't available. In this case it returns 'true', otherwise 'false'
+func (p *DeviceFarmRun) IsTestRunPassIgnoringUnavailableDevices(arn string) bool {
+	result := false
+
+	jobs := getListOfJobsForRun(p.Client, arn)
+
+	for _, v := range jobs {
+		if *v.Result != devicefarm.ExecutionResultPassed && *v.Result != devicefarm.ExecutionResultErrored {
+			return result
+		}
+
+		suites := getListOfSuitesForJob(p.Client, *v.Arn)
+
+		for _, k := range suites {
+			tests := getListOfTestForSuite(p.Client, *k.Arn)
+			for i := range tests {
+				if *tests[i].Name != "Setup Test" && *tests[i].Name != "Teardown Test" {
+					if *tests[i].Result == devicefarm.ExecutionResultPassed {
+						result = true
+					}
+				}
+			}
+		}
+	}
+
+	return result
 }
 
 func getListOfJobsForRun(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Job {

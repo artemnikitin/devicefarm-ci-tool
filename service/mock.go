@@ -445,7 +445,23 @@ func (c *MockClient) ListDevicesPagesWithContext(aws.Context, *devicefarm.ListDe
 	return nil
 }
 
-func (c *MockClient) ListJobs(*devicefarm.ListJobsInput) (*devicefarm.ListJobsOutput, error) {
+func (c *MockClient) ListJobs(input *devicefarm.ListJobsInput) (*devicefarm.ListJobsOutput, error) {
+	if strings.HasSuffix(*input.Arn, "22222222-2222-2222-2222-222222222222") {
+		return &devicefarm.ListJobsOutput{
+			Jobs: []*devicefarm.Job{
+				{
+					Arn:  aws.String(""),
+					Name: aws.String(""),
+					Device: &devicefarm.Device{
+						Platform: aws.String(""),
+						Os:       aws.String(""),
+					},
+					Result: aws.String(devicefarm.ExecutionResultFailed),
+				},
+			},
+		}, nil
+	}
+
 	res := &devicefarm.ListJobsOutput{
 		Jobs: []*devicefarm.Job{
 			{
@@ -455,6 +471,7 @@ func (c *MockClient) ListJobs(*devicefarm.ListJobsInput) (*devicefarm.ListJobsOu
 					Platform: aws.String(""),
 					Os:       aws.String(""),
 				},
+				Result: aws.String(devicefarm.ExecutionResultPassed),
 			},
 		},
 	}
@@ -697,12 +714,20 @@ func (c *MockClient) ListTests(input *devicefarm.ListTestsInput) (*devicefarm.Li
 				{
 					Arn:     aws.String("fail 1"),
 					Message: aws.String("Fail :("),
+					Name:    aws.String("Setup Test"),
 					Result:  aws.String(devicefarm.ExecutionResultFailed),
 				},
 				{
 					Arn:     aws.String("fail 2"),
 					Message: aws.String("Fail :("),
+					Name:    aws.String("Teardown Test"),
 					Result:  aws.String(devicefarm.ExecutionResultFailed),
+				},
+				{
+					Arn:     aws.String("fail 2"),
+					Message: aws.String("Fail :("),
+					Name:    aws.String(""),
+					Result:  aws.String(devicefarm.ExecutionResultPassed),
 				},
 			},
 		}
@@ -718,7 +743,22 @@ func (c *MockClient) ListTests(input *devicefarm.ListTestsInput) (*devicefarm.Li
 		res = &devicefarm.ListTestsOutput{
 			Tests: []*devicefarm.Test{
 				{
-					Arn: aws.String(""),
+					Arn:     aws.String("fail 1"),
+					Message: aws.String("Fail :("),
+					Name:    aws.String("Setup Test"),
+					Result:  aws.String(devicefarm.ExecutionResultFailed),
+				},
+				{
+					Arn:     aws.String("fail 2"),
+					Message: aws.String("Fail :("),
+					Name:    aws.String("Teardown Test"),
+					Result:  aws.String(devicefarm.ExecutionResultFailed),
+				},
+				{
+					Arn:     aws.String("fail 2"),
+					Message: aws.String("Fail :("),
+					Name:    aws.String(""),
+					Result:  aws.String(devicefarm.ExecutionResultPassed),
 				},
 			},
 		}
