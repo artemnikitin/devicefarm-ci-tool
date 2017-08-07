@@ -46,6 +46,8 @@ Example:`-config /path/to/config.json`
 Example:`-wait`  
 - ```checkEvery``` checks every X seconds for test run completion. Default value is 5 second.    
 Example: `-checkEvery 15`
+- ```ignoreUnavailableDevices``` allows to consider test runs as passed for runs where tests passes on several devices, but some of devices were unavailable.    
+Example: `-ignoreUnavailableDevices`
 
 #### Configuration file
 All parameters in the configuration file are optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
