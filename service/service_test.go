@@ -155,3 +155,19 @@ func TestGetListOfFailedTestsMoreThan0(t *testing.T) {
 		t.Error("List of failed tests should be 2!")
 	}
 }
+
+func TestIsTestRunPassIgnoringUnavailableDevicesTrue(t *testing.T) {
+	result := testRun.IsTestRunPassIgnoringUnavailableDevices(
+		"arn:aws:devicefarm:us-west-2:000000000000:run:12312312-1234-5678-9012-345678901234/11111111-1111-1111-1111-111111111111")
+	if !result {
+		t.Error("Test run result should be true")
+	}
+}
+
+func TestIsTestRunPassIgnoringUnavailableDevicesFalse(t *testing.T) {
+	result := testRun.IsTestRunPassIgnoringUnavailableDevices(
+		"arn:aws:devicefarm:us-west-2:000000000000:run:12312312-1234-5678-9012-345678901234/22222222-2222-2222-2222-222222222222")
+	if result {
+		t.Error("Test run result should be false")
+	}
+}

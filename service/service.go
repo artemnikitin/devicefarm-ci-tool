@@ -159,7 +159,7 @@ func (p *DeviceFarmRun) GetStatusOfRun(arn string) (string, string) {
 func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
 	var wg sync.WaitGroup
 	var m sync.Mutex
-	var result []*model.FailedTest
+	var failedTests []*model.FailedTest
 
 	jobs := getListOfJobsForRun(p.Client, arn)
 
@@ -175,13 +175,42 @@ func (p *DeviceFarmRun) GetListOfFailedTests(arn string) []*model.FailedTest {
 			tempResult := populateResult(tests, p.Client)
 
 			m.Lock()
-			result = append(result, tempResult...)
+			failedTests = append(failedTests, tempResult...)
 			m.Unlock()
 
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
+
+	return failedTests
+}
+
+// IsTestRunPassIgnoringUnavailableDevices checks if there was a situation then test runs on some devices passes,
+// but some devices weren't available. In this case it returns 'true', otherwise 'false'
+func (p *DeviceFarmRun) IsTestRunPassIgnoringUnavailableDevices(arn string) bool {
+	result := false
+
+	jobs := getListOfJobsForRun(p.Client, arn)
+
+	for _, v := range jobs {
+		if *v.Result != devicefarm.ExecutionResultPassed && *v.Result != devicefarm.ExecutionResultErrored {
+			return result
+		}
+
+		suites := getListOfSuitesForJob(p.Client, *v.Arn)
+
+		for _, k := range suites {
+			tests := getListOfTestForSuite(p.Client, *k.Arn)
+			for i := range tests {
+				if *tests[i].Name != "Setup Test" && *tests[i].Name != "Teardown Test" {
+					if *tests[i].Result == devicefarm.ExecutionResultPassed {
+						result = true
+					}
+				}
+			}
+		}
+	}
 
 	return result
 }

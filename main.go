@@ -19,14 +19,15 @@ import (
 )
 
 var (
-	project    = flag.String("project", "", "Device Farm project name")
-	runName    = flag.String("run", "", "Name of test run")
-	appPath    = flag.String("app", "", "Path to an app")
-	testPath   = flag.String("test", "", "Path to test app")
-	devicePool = flag.String("devices", "Top Devices", "Specify list of devices for tests")
-	configJSON = flag.String("config", "", "Path to JSON config")
-	wait       = flag.Bool("wait", false, "Wait for run end")
-	checkEvery = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
+	project                  = flag.String("project", "", "Device Farm project name")
+	runName                  = flag.String("run", "", "Name of test run")
+	appPath                  = flag.String("app", "", "Path to an app")
+	testPath                 = flag.String("test", "", "Path to test app")
+	devicePool               = flag.String("devices", "Top Devices", "Specify list of devices for tests")
+	configJSON               = flag.String("config", "", "Path to JSON config")
+	wait                     = flag.Bool("wait", false, "Wait for run end")
+	checkEvery               = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
+	ignoreUnavailableDevices = flag.Bool("ignoreUnavailableDevices", false, "Consider test run where one of devices failed as green")
 )
 
 func main() {
@@ -85,9 +86,13 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 	if *wait {
 		result := svc.WaitForRunEnds(runArn, *checkEvery)
 		if result != devicefarm.ExecutionResultPassed {
-			failedTests = svc.GetListOfFailedTests(runArn)
-			pass = false
+			failed := svc.GetListOfFailedTests(runArn)
+			pass = makeBuildFailed(result, failed, *ignoreUnavailableDevices)
 		}
+	}
+
+	if *ignoreUnavailableDevices {
+		pass = svc.IsTestRunPassIgnoringUnavailableDevices(runArn)
 	}
 
 	printReportURL(runArn)
@@ -129,6 +134,14 @@ func statusCheck(status string) {
 		log.Println("Status =", status)
 		log.Fatal("Failed to start a job ...")
 	}
+}
+
+func makeBuildFailed(result string, failed []*model.FailedTest, option bool) bool {
+	testResult := false
+	if result == devicefarm.ExecutionResultErrored && len(failed) == 0 && option {
+		testResult = true
+	}
+	return testResult
 }
 
 func printReportURL(arn string) {
