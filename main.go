@@ -28,6 +28,7 @@ var (
 	wait                     = flag.Bool("wait", false, "Wait for run end")
 	checkEvery               = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
 	ignoreUnavailableDevices = flag.Bool("ignoreUnavailableDevices", false, "Consider test run where one of devices failed as green")
+	testType                 = flag.String("testType", "", "Type of tests to run")
 )
 
 func main() {
@@ -114,6 +115,9 @@ func getConfig() *model.RunConfig {
 	}
 	if *testPath != "" {
 		configFile.TestPackagePath = *testPath
+	}
+	if *testType != "" {
+		configFile.Test.Type = aws.String(*testType)
 	}
 	return configFile
 }
