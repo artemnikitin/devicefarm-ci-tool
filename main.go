@@ -41,14 +41,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	failed, pass := runJob(getAWSClient(), getConfig())
-	if !pass {
-		if len(failed) == 0 {
+	failedTests, success := runJob(getAWSClient(), getConfig())
+	if !success {
+		if len(failedTests) == 0 {
 			log.Println(fmt.Sprintf("Test job fails, it looks like AWS/infrastructure/setup issue, check the report."))
 		} else {
-			log.Println(fmt.Sprintf("There are %d test fails, check it out!\n", len(failed)))
-			for i := 0; i < len(failed); i++ {
-				fmt.Println(failed[i].ToString())
+			log.Println(fmt.Sprintf("There are %d test fails, check it out!\n", len(failedTests)))
+			for i := 0; i < len(failedTests); i++ {
+				fmt.Println(failedTests[i].ToString())
 			}
 		}
 		os.Exit(1)
