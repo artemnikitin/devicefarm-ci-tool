@@ -195,7 +195,7 @@ func (p *DeviceFarmRun) IsTestRunPassIgnoringUnavailableDevices(arn string) bool
 
 	for _, v := range jobs {
 		if *v.Result != devicefarm.ExecutionResultPassed && *v.Result != devicefarm.ExecutionResultErrored {
-			return result
+			return false
 		}
 
 		suites := getListOfSuitesForJob(p.Client, *v.Arn)
