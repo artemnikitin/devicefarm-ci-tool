@@ -48,6 +48,8 @@ Example:`-wait`
 Example: `-checkEvery 15`
 - ```ignoreUnavailableDevices``` allows to consider test runs as passed for runs where tests passes on several devices, but some of devices were unavailable.    
 Example: `-ignoreUnavailableDevices`
+- ```testType``` allows to specify test type via command line. Test type should be one of test types available on AWS Device Farm, see [ScheduleRunTest](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRunTest.html)       
+Example: `-testType INSTRUMENTATION`
 
 #### Configuration file
 All parameters in the configuration file are optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        

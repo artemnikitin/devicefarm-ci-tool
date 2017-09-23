@@ -28,6 +28,7 @@ var (
 	wait                     = flag.Bool("wait", false, "Wait for run end")
 	checkEvery               = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
 	ignoreUnavailableDevices = flag.Bool("ignoreUnavailableDevices", false, "Consider test run where one of devices failed as green")
+	testType                 = flag.String("testType", "", "Type of tests to run")
 )
 
 func main() {
@@ -100,7 +101,9 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 }
 
 func getConfig() *model.RunConfig {
-	configFile := &model.RunConfig{}
+	configFile := &model.RunConfig{
+		Test: &devicefarm.ScheduleRunTest{},
+	}
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		errors.Validate(err, "Can't read model file")
@@ -114,6 +117,9 @@ func getConfig() *model.RunConfig {
 	}
 	if *testPath != "" {
 		configFile.TestPackagePath = *testPath
+	}
+	if *testType != "" {
+		configFile.Test.Type = aws.String(*testType)
 	}
 	return configFile
 }
