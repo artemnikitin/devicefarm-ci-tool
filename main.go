@@ -101,7 +101,9 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 }
 
 func getConfig() *model.RunConfig {
-	configFile := &model.RunConfig{}
+	configFile := &model.RunConfig{
+		Test: &devicefarm.ScheduleRunTest{},
+	}
 	if *configJSON != "" {
 		bytes, err := ioutil.ReadFile(*configJSON)
 		errors.Validate(err, "Can't read model file")
