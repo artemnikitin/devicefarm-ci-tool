@@ -2,11 +2,11 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/artemnikitin/devicefarm-ci-tool)](https://goreportcard.com/report/github.com/artemnikitin/devicefarm-ci-tool) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fartemnikitin%2Fdevicefarm-ci-tool.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fartemnikitin%2Fdevicefarm-ci-tool?ref=badge_shield)
   [![Build Status](https://travis-ci.org/artemnikitin/devicefarm-ci-tool.svg?branch=master)](https://travis-ci.org/artemnikitin/devicefarm-ci-tool)     
 #### Description
-Did you try to run an app in AWS Device Farm via CLI or API? It was easy, right? Right now you can probably say ARN of your project after wake up in the middle of the night.
+Did you try to run your app in AWS Device Farm via CLI or API? It was easy, right? Right now you can probably say ARN of your project after wake up in the middle of the night :)
 
-This tool helps to run apps in AWS Device Farm. You don't need to know ARN because it's for a machine and not for a human.
+This tool helps you to run tests in AWS Device Farm. You don't need to know ARN of your project because it's for machines and not for humans.
 
-It's not a replacement for existing AWS CLI tools. It was created for a very specific purpose, to run tests in CI without a lot of configuration that required for existing solutions. It based on an assumption that all setup is already done. It means, that if you will specify an unexisted project name, then the tool will not create it.
+It's not a replacement for existing AWS CLI tools. It was created for a very specific purpose, to run tests in CI without a lot of configuration that required for existing solutions. It based on an assumption that all setup is already done. It means, that if you will specify an unexisted project name, then the tool will not create a project for you.
 #### AWS Credentials
 
 Set environment variables     
@@ -38,17 +38,17 @@ Optional parameters:
 Example: `-run myName` 
 - ```test``` path to tests. Overrides value of `testPackagePath` parameter from config.     
 Example: `-test /path/to/my/testapp.apk` 
-- ```devices``` name of device pool where app will be run.      
-Example:`-devices my-device-pool`      
-- ```config``` path to config in JSON format.      
-Example:`-config /path/to/config.json`   
+- ```devices``` name of device pool where app will be run. If not specified, then tests will be run in default pool selected by AWS.          
+Example: `-devices my-device-pool`      
+- ```config``` path to config in JSON format.    
+Example: `-config /path/to/config.json`   
 - ```wait``` wait for an end of test run. Useful for CI. Disabled by default.     
-Example:`-wait`  
+Example: `-wait`  
 - ```checkEvery``` checks every X seconds for test run completion. Default value is 5 second.    
 Example: `-checkEvery 15`
-- ```ignoreUnavailableDevices``` allows to consider test runs as passed for runs where tests passes on several devices, but some of devices were unavailable.    
+- ```ignoreUnavailableDevices``` allows to consider test runs as passed for runs where tests passes on several devices, but some of devices were unavailable. For example, if device pool consists of 3 devices and on 2 devices everything is ok, but third device was unavailable, then using this option will mark test run as successful.     
 Example: `-ignoreUnavailableDevices`
-- ```testType``` allows to specify test type via command line. Test type should be one of test types available on AWS Device Farm, see [ScheduleRunTest](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRunTest.html)       
+- ```testType``` allows to specify test type via command line. Test type should be one of test types available on AWS Device Farm, see [ScheduleRunTest](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRunTest.html). Overrides value of `type` parameter from config.       
 Example: `-testType INSTRUMENTATION`
 
 #### Configuration file
