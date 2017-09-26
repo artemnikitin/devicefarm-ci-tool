@@ -1,4 +1,4 @@
-## Tool that helps more easier run your apps in AWS Device Farm
+## Tool that helps you to run your tests in AWS Device Farm easily
 [![Go Report Card](https://goreportcard.com/badge/github.com/artemnikitin/devicefarm-ci-tool)](https://goreportcard.com/report/github.com/artemnikitin/devicefarm-ci-tool) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fartemnikitin%2Fdevicefarm-ci-tool.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fartemnikitin%2Fdevicefarm-ci-tool?ref=badge_shield)
   [![Build Status](https://travis-ci.org/artemnikitin/devicefarm-ci-tool.svg?branch=master)](https://travis-ci.org/artemnikitin/devicefarm-ci-tool)     
 #### Description
