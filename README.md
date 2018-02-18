@@ -54,7 +54,7 @@ Example: `-testType INSTRUMENTATION`
 #### Configuration file
 All parameters in the configuration file are optional. Configuration file is based on a syntax of [ScheduleRun](http://docs.aws.amazon.com/devicefarm/latest/APIReference/API_ScheduleRun.html) request.        
 
-Example of config (for current master):    
+Config example:    
 ```json
 {
    "name": "string",
@@ -98,50 +98,6 @@ Example of config (for current master):
    }
 }
 ```    
-Example of old config (for release 1.2.1):    
-```json
-{
-   "runName":"name",
-   "devicePoolArn":"ARN",
-   "devicePoolName":"Top Devices",
-   "test":{
-      "type":"BUILTIN_FUZZ|BUILTIN_EXPLORER|APPIUM_JAVA_JUNIT|APPIUM_JAVA_TESTNG|APPIUM_PYTHON|APPIUM_WEB_JAVA_JUNIT|APPIUM_WEB_JAVA_TESTNG|APPIUM_WEB_PYTHON|CALABASH|INSTRUMENTATION|UIAUTOMATION|UIAUTOMATOR|XCTEST",
-      "testPackageArn":"string",
-      "testPackagePath":"string",
-      "filter":"string",
-      "parameters":{
-         "key":"value",
-         "key":"value"
-      }
-   },
-   "additionalData":{
-      "extraDataPackageArn":"string",
-      "extraDataPackagePath":"string",
-      "networkProfileArn":"string",
-      "locale":"string",
-      "location":{
-         "latitude":1.222,
-         "longitude":1.222
-      },
-      "radios":{
-         "wifi":"true|false",
-         "bluetooth":"true|false",
-         "nfc":"true|false",
-         "gps":"true|false"
-      },
-      "auxiliaryApps":[
-         "string1",
-         "string2"
-      ],
-      "billingMethod":"METERED|UNMETERED"
-   },
-   "executionConfiguration":{ 
-      "jobTimeoutMinutes":111,
-      "accountsCleanup":false,
-      "appPackagesCleanup":false
-   }
-}
-```
 
 
 ## License
