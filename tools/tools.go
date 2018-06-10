@@ -3,7 +3,9 @@ package tools
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"strings"
+	"time"
 )
 
 // UploadFile used to upload file by S3 pre-signed URL
@@ -36,4 +38,10 @@ func GenerateReportURL(arn string) string {
 	project := str[:index]
 	run := str[index+1:]
 	return fmt.Sprintf(URL, project, run)
+}
+
+// Random generates random integer in given range
+func Random(min, max int) int {
+	rand.Seed(time.Now().Unix())
+	return rand.Intn(max-min) + min
 }

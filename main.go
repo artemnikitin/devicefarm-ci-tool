@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/artemnikitin/devicefarm-ci-tool/errors"
 	"github.com/artemnikitin/devicefarm-ci-tool/model"
@@ -24,6 +25,7 @@ var (
 	appPath                  = flag.String("app", "", "Path to an app")
 	testPath                 = flag.String("test", "", "Path to test app")
 	devicePool               = flag.String("devices", "Top Devices", "Specify list of devices for tests")
+	randomDevicePool         = flag.String("randomDevices", "", "List of device pools for random choice")
 	configJSON               = flag.String("config", "", "Path to JSON config")
 	wait                     = flag.Bool("wait", false, "Wait for run end")
 	checkEvery               = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
@@ -92,7 +94,7 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 		}
 	}
 
-	if *ignoreUnavailableDevices {
+	if *ignoreUnavailableDevices && *wait {
 		pass = svc.IsTestRunPassIgnoringUnavailableDevices(runArn)
 	}
 
@@ -110,7 +112,13 @@ func getConfig() *model.RunConfig {
 		configFile = model.Transform(bytes)
 	}
 	if configFile.DevicePoolArn == "" && configFile.DevicePoolName == "" {
-		configFile.DevicePoolName = *devicePool
+		if *randomDevicePool != "" {
+			pools := strings.Split(*randomDevicePool, ",")
+			i := tools.Random(0, len(pools)-1)
+			configFile.DevicePoolName = pools[i]
+		} else {
+			configFile.DevicePoolName = *devicePool
+		}
 	}
 	if *runName != "" {
 		configFile.Name = *runName

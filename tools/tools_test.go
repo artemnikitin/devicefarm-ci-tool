@@ -51,3 +51,10 @@ func TestGenerateReportURL(t *testing.T) {
 		}
 	}
 }
+
+func TestRandom(t *testing.T) {
+	i := Random(1, 10)
+	if i < 1 || i > 10 {
+		t.Error("Random int should be in given range")
+	}
+}
