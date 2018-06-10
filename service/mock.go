@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/devicefarm"
 )
 
+// UploadARN using for tests
 const UploadARN = "wefere3f3f33gv3fre3f3f3f3f3v34v3v43v433v34v43v34"
 
 // CreateFakeServer creates a fake server for tests
@@ -28,6 +29,162 @@ type MockClient struct {
 	PartlyUnavailableDevice bool
 	FullUnavailableDevices  bool
 	FakeServer              *httptest.Server
+}
+
+func (c *MockClient) CreateInstanceProfile(*devicefarm.CreateInstanceProfileInput) (*devicefarm.CreateInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) CreateInstanceProfileWithContext(aws.Context, *devicefarm.CreateInstanceProfileInput, ...request.Option) (*devicefarm.CreateInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) CreateInstanceProfileRequest(*devicefarm.CreateInstanceProfileInput) (*request.Request, *devicefarm.CreateInstanceProfileOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) CreateVPCEConfiguration(*devicefarm.CreateVPCEConfigurationInput) (*devicefarm.CreateVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) CreateVPCEConfigurationWithContext(aws.Context, *devicefarm.CreateVPCEConfigurationInput, ...request.Option) (*devicefarm.CreateVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) CreateVPCEConfigurationRequest(*devicefarm.CreateVPCEConfigurationInput) (*request.Request, *devicefarm.CreateVPCEConfigurationOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) DeleteInstanceProfile(*devicefarm.DeleteInstanceProfileInput) (*devicefarm.DeleteInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) DeleteInstanceProfileWithContext(aws.Context, *devicefarm.DeleteInstanceProfileInput, ...request.Option) (*devicefarm.DeleteInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) DeleteInstanceProfileRequest(*devicefarm.DeleteInstanceProfileInput) (*request.Request, *devicefarm.DeleteInstanceProfileOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) DeleteVPCEConfiguration(*devicefarm.DeleteVPCEConfigurationInput) (*devicefarm.DeleteVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) DeleteVPCEConfigurationWithContext(aws.Context, *devicefarm.DeleteVPCEConfigurationInput, ...request.Option) (*devicefarm.DeleteVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) DeleteVPCEConfigurationRequest(*devicefarm.DeleteVPCEConfigurationInput) (*request.Request, *devicefarm.DeleteVPCEConfigurationOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetDeviceInstance(*devicefarm.GetDeviceInstanceInput) (*devicefarm.GetDeviceInstanceOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetDeviceInstanceWithContext(aws.Context, *devicefarm.GetDeviceInstanceInput, ...request.Option) (*devicefarm.GetDeviceInstanceOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetDeviceInstanceRequest(*devicefarm.GetDeviceInstanceInput) (*request.Request, *devicefarm.GetDeviceInstanceOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetInstanceProfile(*devicefarm.GetInstanceProfileInput) (*devicefarm.GetInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetInstanceProfileWithContext(aws.Context, *devicefarm.GetInstanceProfileInput, ...request.Option) (*devicefarm.GetInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetInstanceProfileRequest(*devicefarm.GetInstanceProfileInput) (*request.Request, *devicefarm.GetInstanceProfileOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetVPCEConfiguration(*devicefarm.GetVPCEConfigurationInput) (*devicefarm.GetVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetVPCEConfigurationWithContext(aws.Context, *devicefarm.GetVPCEConfigurationInput, ...request.Option) (*devicefarm.GetVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) GetVPCEConfigurationRequest(*devicefarm.GetVPCEConfigurationInput) (*request.Request, *devicefarm.GetVPCEConfigurationOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListDeviceInstances(*devicefarm.ListDeviceInstancesInput) (*devicefarm.ListDeviceInstancesOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListDeviceInstancesWithContext(aws.Context, *devicefarm.ListDeviceInstancesInput, ...request.Option) (*devicefarm.ListDeviceInstancesOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListDeviceInstancesRequest(*devicefarm.ListDeviceInstancesInput) (*request.Request, *devicefarm.ListDeviceInstancesOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListInstanceProfiles(*devicefarm.ListInstanceProfilesInput) (*devicefarm.ListInstanceProfilesOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListInstanceProfilesWithContext(aws.Context, *devicefarm.ListInstanceProfilesInput, ...request.Option) (*devicefarm.ListInstanceProfilesOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListInstanceProfilesRequest(*devicefarm.ListInstanceProfilesInput) (*request.Request, *devicefarm.ListInstanceProfilesOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListVPCEConfigurations(*devicefarm.ListVPCEConfigurationsInput) (*devicefarm.ListVPCEConfigurationsOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListVPCEConfigurationsWithContext(aws.Context, *devicefarm.ListVPCEConfigurationsInput, ...request.Option) (*devicefarm.ListVPCEConfigurationsOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) ListVPCEConfigurationsRequest(*devicefarm.ListVPCEConfigurationsInput) (*request.Request, *devicefarm.ListVPCEConfigurationsOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateDeviceInstance(*devicefarm.UpdateDeviceInstanceInput) (*devicefarm.UpdateDeviceInstanceOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateDeviceInstanceWithContext(aws.Context, *devicefarm.UpdateDeviceInstanceInput, ...request.Option) (*devicefarm.UpdateDeviceInstanceOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateDeviceInstanceRequest(*devicefarm.UpdateDeviceInstanceInput) (*request.Request, *devicefarm.UpdateDeviceInstanceOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateInstanceProfile(*devicefarm.UpdateInstanceProfileInput) (*devicefarm.UpdateInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateInstanceProfileWithContext(aws.Context, *devicefarm.UpdateInstanceProfileInput, ...request.Option) (*devicefarm.UpdateInstanceProfileOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateInstanceProfileRequest(*devicefarm.UpdateInstanceProfileInput) (*request.Request, *devicefarm.UpdateInstanceProfileOutput) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateVPCEConfiguration(*devicefarm.UpdateVPCEConfigurationInput) (*devicefarm.UpdateVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateVPCEConfigurationWithContext(aws.Context, *devicefarm.UpdateVPCEConfigurationInput, ...request.Option) (*devicefarm.UpdateVPCEConfigurationOutput, error) {
+	panic("implement me")
+}
+
+func (c *MockClient) UpdateVPCEConfigurationRequest(*devicefarm.UpdateVPCEConfigurationInput) (*request.Request, *devicefarm.UpdateVPCEConfigurationOutput) {
+	panic("implement me")
 }
 
 func (c *MockClient) CreateDevicePool(*devicefarm.CreateDevicePoolInput) (*devicefarm.CreateDevicePoolOutput, error) {
