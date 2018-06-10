@@ -2,12 +2,13 @@ language: go
 
 go:
  - 1.x
+ - 1.9.x
 
 install:
  - pwd #just for using vendored dependencies
 
 script:
- - go test -race -v $(go list ./... | grep -v /vendor/)
+ - make
 
 after_success:
  - curl --request POST "https://goreportcard.com/checks" --data "repo=github.com/artemnikitin/devicefarm-ci-tool"
