@@ -5,7 +5,7 @@ go:
  - 1.9.x
 
 install:
- - pwd #just for using vendored dependencies
+ - go get -u golang.org/x/lint/golint
 
 script:
  - make
