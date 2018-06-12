@@ -40,6 +40,10 @@ Example: `-run myName`
 Example: `-test /path/to/my/testapp.apk` 
 - ```devices``` name of device pool where app will be run. If not specified, then tests will be run in default pool selected by AWS.          
 Example: `-devices my-device-pool`      
+- ```randomDevices``` will randomly select device pool from provided list    
+Example: `-randomDevices aaa,bbb,ccc,xxx,yyy,zzz`    
+- ```useRandomDevicePool``` device pool will be selected randomly from existed pools which are not used in any active test run    
+Example: `-useRandomDevicePool`    
 - ```config``` path to config in JSON format.    
 Example: `-config /path/to/config.json`   
 - ```wait``` wait for an end of test run. Useful for CI. Disabled by default.     
