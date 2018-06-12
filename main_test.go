@@ -31,7 +31,7 @@ func TestRunJob(t *testing.T) {
 			project: "test",
 			file:    "main_test.go",
 			config:  &model.RunConfig{},
-			failed:  []*model.FailedTest{},
+			failed:  []*model.FailedTest{{}, {}},
 			pass:    false,
 		},
 		{
