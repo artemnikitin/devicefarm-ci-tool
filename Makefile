@@ -4,20 +4,20 @@ all: clean lint test
 
 clean:
 		@echo "Cleanup..."
-		rm -f devicefarm-ci-tool_windows_amd64.exe
-		rm -f devicefarm-ci-tool_darwin_amd64
-		rm -f devicefarm-ci-tool_linux_arm
-		rm -f devicefarm-ci-tool_linux_amd64
+		@rm -f devicefarm-ci-tool_windows_amd64.exe
+		@rm -f devicefarm-ci-tool_darwin_amd64
+		@rm -f devicefarm-ci-tool_linux_arm
+		@rm -f devicefarm-ci-tool_linux_amd64
 
 lint:
 		@echo "Run checks..."
-		go fmt $$(go list ./... | grep -v /vendor/)
-		go vet $$(go list ./... | grep -v /vendor/)
-		golint $$(go list ./... | grep -v /vendor/)
+		@go fmt $$(go list ./... | grep -v /vendor/)
+		@go vet $$(go list ./... | grep -v /vendor/)
+		@golint $$(go list ./... | grep -v /vendor/)
 
 test:
 		@echo "Run tests..."
-		go test -v -race $$(go list ./... | grep -v /vendor/)
+		@go test -v -race $$(go list ./... | grep -v /vendor/)
 
 build:
 		@echo "Building binaries..."
