@@ -215,6 +215,39 @@ func (p *DeviceFarmRun) IsTestRunPassIgnoringUnavailableDevices(arn string) bool
 	return result
 }
 
+// SelectDevicePool checking for unused at the moment device pools and randomly selects one
+func (p *DeviceFarmRun) SelectDevicePool(arn string) string {
+	devicesResp, err := p.Client.ListDevicePools(&devicefarm.ListDevicePoolsInput{Arn: aws.String(arn)})
+	errors.Validate(err, "Failed to get list of device pools")
+	devices := make(map[string]string)
+	for _, v := range devicesResp.DevicePools {
+		if *v.Type == devicefarm.DevicePoolTypePrivate {
+			devices[*v.Arn] = *v.Name
+		}
+	}
+
+	runsResp, err := p.Client.ListRuns(&devicefarm.ListRunsInput{Arn: aws.String(arn)})
+	errors.Validate(err, "Failed to get list of runs")
+	for _, v := range runsResp.Runs {
+		if *v.Status != devicefarm.ExecutionStatusCompleted && *v.Status != devicefarm.ExecutionStatusStopping {
+			delete(devices, *v.DevicePoolArn)
+		}
+	}
+
+	if len(devices) == 0 {
+		return "Top Devices"
+	}
+	devicesList := make([]string, 0)
+	for _, v := range devices {
+		devicesList = append(devicesList, v)
+	}
+	log.Println("List of available device pools:", devicesList)
+
+	deviceName := devicesList[tools.Random(0, len(devicesList)-1)]
+	p.Config.DevicePoolName = deviceName
+	return deviceName
+}
+
 func getListOfJobsForRun(client devicefarmiface.DeviceFarmAPI, arn string) []*devicefarm.Job {
 	params := &devicefarm.ListJobsInput{
 		Arn: aws.String(arn),

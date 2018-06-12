@@ -29,12 +29,18 @@ var (
 	configJSON               = flag.String("config", "", "Path to JSON config")
 	wait                     = flag.Bool("wait", false, "Wait for run end")
 	checkEvery               = flag.Int("checkEvery", 5, "Specified time slice for checking status of run")
+	useRandomDevicePool      = flag.Bool("useRandomDevicePool", false, "If enabled will select one of available device pools")
 	ignoreUnavailableDevices = flag.Bool("ignoreUnavailableDevices", false, "Consider test run where one of devices failed as green")
 	testType                 = flag.String("testType", "", "Type of tests to run")
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	flag.Parse()
+
+	*project = "iot-sdk"
+	*appPath = "HereUiKitApp-debug.apk"
+	*useRandomDevicePool = true
 
 	if *project == "" || *appPath == "" {
 		fmt.Println("Please specify correct parameters!")
@@ -69,6 +75,9 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 		log.Fatal("Application finished, because it can't retrieve project ARN")
 	}
 
+	if *useRandomDevicePool {
+		svc.SelectDevicePool(svc.ProjectArn)
+	}
 	svc.GetDevicePoolArn(svc.Config.DevicePoolName)
 
 	appArn, url := svc.CreateUpload(*appPath)
