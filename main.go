@@ -38,10 +38,6 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	flag.Parse()
 
-	*project = "iot-sdk"
-	*appPath = "HereUiKitApp-debug.apk"
-	*useRandomDevicePool = true
-
 	if *project == "" || *appPath == "" {
 		fmt.Println("Please specify correct parameters!")
 		fmt.Println("You should specify:")
@@ -98,8 +94,8 @@ func runJob(client devicefarmiface.DeviceFarmAPI, config *model.RunConfig) ([]*m
 	if *wait {
 		result := svc.WaitForRunEnds(runArn, *checkEvery)
 		if result != devicefarm.ExecutionResultPassed {
-			failed := svc.GetListOfFailedTests(runArn)
-			pass = makeBuildFailed(result, failed, *ignoreUnavailableDevices)
+			failedTests = svc.GetListOfFailedTests(runArn)
+			pass = makeBuildFailed(result, failedTests, *ignoreUnavailableDevices)
 		}
 	}
 
