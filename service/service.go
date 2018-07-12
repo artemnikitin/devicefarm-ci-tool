@@ -245,6 +245,7 @@ func (p *DeviceFarmRun) SelectDevicePool(arn string) string {
 
 	deviceName := devicesList[tools.Random(0, len(devicesList)-1)]
 	p.Config.DevicePoolName = deviceName
+	log.Println("Selected device pool:", deviceName)
 	return deviceName
 }
 
