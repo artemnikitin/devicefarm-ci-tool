@@ -2,31 +2,104 @@
 
 
 [[projects]]
+  digest = "1:56935fc160052b5e5a53d93b537d87627d9102d35f7a2a5cff2f4f10a2d9e077"
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/csm","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/sdkio","internal/sdkrand","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/xml/xmlutil","service/devicefarm","service/devicefarm/devicefarmiface","service/sts"]
-  revision = "d2d4fca90395039f60821c231da759cab8f318c7"
-  version = "v1.14.4"
+  packages = [
+    "aws",
+    "aws/awserr",
+    "aws/awsutil",
+    "aws/client",
+    "aws/client/metadata",
+    "aws/corehandlers",
+    "aws/credentials",
+    "aws/credentials/ec2rolecreds",
+    "aws/credentials/endpointcreds",
+    "aws/credentials/processcreds",
+    "aws/credentials/stscreds",
+    "aws/csm",
+    "aws/defaults",
+    "aws/ec2metadata",
+    "aws/endpoints",
+    "aws/request",
+    "aws/session",
+    "aws/signer/v4",
+    "internal/ini",
+    "internal/sdkio",
+    "internal/sdkrand",
+    "internal/sdkuri",
+    "internal/shareddefaults",
+    "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
+    "private/protocol/query",
+    "private/protocol/query/queryutil",
+    "private/protocol/rest",
+    "private/protocol/xml/xmlutil",
+    "service/devicefarm",
+    "service/devicefarm/devicefarmiface",
+    "service/sts",
+  ]
+  pruneopts = ""
+  revision = "9e05738701c04cb3d4ccdb493ad4f3c4c3994757"
+  version = "v1.19.5"
 
 [[projects]]
+  digest = "1:55848e643a99a9dfceb19e090ce67111328fbb1780f34c62a0430994ff85fb90"
   name = "github.com/fatih/structs"
   packages = ["."]
+  pruneopts = ""
   revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
   version = "v1.0"
 
 [[projects]]
+  digest = "1:617b3e0f5989d4ff866a1820480990c65dfc9257eb080da749a45e2d76681b02"
   name = "github.com/go-ini/ini"
   packages = ["."]
+  pruneopts = ""
   revision = "06f5f3d67269ccec1fe5fe4134ba6e982984f7f5"
   version = "v1.37.0"
 
 [[projects]]
+  digest = "1:13fe471d0ed891e8544eddfeeb0471fd3c9f2015609a1c000aefdedf52a19d40"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
-  revision = "0b12d6b5"
+  pruneopts = ""
+  revision = "c2b33e84"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "779ddb6908733c1e90bb2b87a5d0eb6d3bb9d66f401007d108e6c07da67ab3c7"
+  input-imports = [
+    "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/awserr",
+    "github.com/aws/aws-sdk-go/aws/awsutil",
+    "github.com/aws/aws-sdk-go/aws/client",
+    "github.com/aws/aws-sdk-go/aws/client/metadata",
+    "github.com/aws/aws-sdk-go/aws/corehandlers",
+    "github.com/aws/aws-sdk-go/aws/credentials",
+    "github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds",
+    "github.com/aws/aws-sdk-go/aws/credentials/endpointcreds",
+    "github.com/aws/aws-sdk-go/aws/credentials/stscreds",
+    "github.com/aws/aws-sdk-go/aws/csm",
+    "github.com/aws/aws-sdk-go/aws/defaults",
+    "github.com/aws/aws-sdk-go/aws/ec2metadata",
+    "github.com/aws/aws-sdk-go/aws/endpoints",
+    "github.com/aws/aws-sdk-go/aws/request",
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/aws/signer/v4",
+    "github.com/aws/aws-sdk-go/private/protocol",
+    "github.com/aws/aws-sdk-go/private/protocol/json/jsonutil",
+    "github.com/aws/aws-sdk-go/private/protocol/jsonrpc",
+    "github.com/aws/aws-sdk-go/private/protocol/query",
+    "github.com/aws/aws-sdk-go/private/protocol/query/queryutil",
+    "github.com/aws/aws-sdk-go/private/protocol/rest",
+    "github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil",
+    "github.com/aws/aws-sdk-go/service/devicefarm",
+    "github.com/aws/aws-sdk-go/service/devicefarm/devicefarmiface",
+    "github.com/aws/aws-sdk-go/service/sts",
+    "github.com/fatih/structs",
+    "github.com/go-ini/ini",
+    "github.com/jmespath/go-jmespath",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
