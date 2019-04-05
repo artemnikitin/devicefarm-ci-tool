@@ -23,7 +23,7 @@
 
 [[constraint]]
   name = "github.com/aws/aws-sdk-go"
-  version = "1.19.5"
+  version = "1.19.10"
 
 [[constraint]]
   name = "github.com/fatih/structs"
