@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:e1fc4e86ce21dca811fb1a59438f55e442cfcbdfc3346637ad87a448dca6a657"
+  digest = "1:97091dbcde0de46e0c80bc2209ee848e3a966a0ff447bbd4f51d3ef021054272"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -38,10 +38,11 @@
     "service/devicefarm",
     "service/devicefarm/devicefarmiface",
     "service/sts",
+    "service/sts/stsiface",
   ]
   pruneopts = ""
-  revision = "56c1def75689cceec1fa6f14c2eedb4b798827f9"
-  version = "v1.19.11"
+  revision = "f3fe96892dc0e8e8e9862456e1455e62e4cb55d4"
+  version = "v1.21.9"
 
 [[projects]]
   digest = "1:2defd14040b1ca18840524e9d0f9cfab0ea8d2f2d396b343d221f8bc8e21ab9d"
