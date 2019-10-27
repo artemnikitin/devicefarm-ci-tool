@@ -216,6 +216,43 @@ func TestUploadExtraData(t *testing.T) {
 	}
 }
 
+func TestUploadAuxiliaryApps(t *testing.T) {
+	server := CreateFakeServer()
+	defer server.Close()
+
+	client := &MockClient{
+		UploadTest: true,
+		FakeServer: server,
+	}
+
+	cases := []struct {
+		name       string
+		jsonString []byte
+		qtyARN     int
+	}{
+		{
+			name:       "If auxiliaryAppsPath is not specified, then nothing should be uploaded",
+			jsonString: []byte(`{"name": "string"}`),
+			qtyARN:     0,
+		},
+		{
+			name:       "If auxiliaryAppsPath specified, then all items should be uploaded",
+			jsonString: []byte(`{"auxiliaryAppsPath": [ "test.zzz", "test.zzz" ]}`),
+			qtyARN:     2,
+		},
+	}
+
+	for _, v := range cases {
+		t.Run(v.name, func(t *testing.T) {
+			conf := createRun(v.jsonString, client)
+			fmt.Println(conf.String())
+			if getAuxiliaryAppSize(conf) != v.qtyARN {
+				t.Fatalf("Should be %d auxiliary app ARN, actual number: %d", v.qtyARN, len(conf.Configuration.AuxiliaryApps))
+			}
+		})
+	}
+}
+
 func createRun(bytes []byte, client devicefarmiface.DeviceFarmAPI) *devicefarm.ScheduleRunInput {
 	p := &DeviceFarmRun{
 		Client:  client,
@@ -223,4 +260,28 @@ func createRun(bytes []byte, client devicefarmiface.DeviceFarmAPI) *devicefarm.S
 		Project: "232323",
 	}
 	return createScheduleRunInput(p)
+}
+
+func getAuxiliaryAppSize(config *devicefarm.ScheduleRunInput) int {
+	s := structs.New(config)
+	fmt.Println("getAuxiliaryAppSize size:", len(s.Fields()))
+	fmt.Println("getAuxiliaryAppSize fields:")
+	for _, v := range s.Fields() {
+		fmt.Println(v.Name())
+	}
+	f, ok := s.FieldOk("Configuration")
+	if !ok || (ok && f.IsZero()) {
+		return 0
+	}
+	found := false
+	for _, v := range f.Fields() {
+		if v.Name() == "AuxiliaryApps" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return 0
+	}
+	return len(config.Configuration.AuxiliaryApps)
 }

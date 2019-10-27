@@ -74,6 +74,18 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 		}
 	}
 
+	if len(p.Config.AuxiliaryAppsPath) > 0 {
+		auxAppARN := make([]string, 0)
+		for _, v := range p.Config.AuxiliaryAppsPath {
+			auxAppARN = append(auxAppARN, uploadAuxiliaryApps(v, p))
+		}
+		f, ok := structs.New(result).FieldOk("Configuration")
+		if !ok || (ok && f.IsZero()) {
+			result.Configuration = &devicefarm.ScheduleRunConfiguration{}
+		}
+		result.Configuration.AuxiliaryApps = aws.StringSlice(auxAppARN)
+	}
+
 	wg.Wait()
 	return result
 }
@@ -107,4 +119,15 @@ func uploadTestPackage(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg
 		result.Test.TestPackageArn = aws.String(arn)
 		wg.Done()
 	}()
+}
+
+func uploadAuxiliaryApps(app string, p *DeviceFarmRun) string {
+	log.Println("Uploading auxiliary app...")
+	arn, url := p.CreateUpload(app)
+	httpResponse := tools.UploadFile(app, url)
+	if httpResponse != 200 {
+		log.Fatal("Can't upload auxiliary app")
+	}
+	p.WaitForAppProcessed(arn, 5)
+	return arn
 }

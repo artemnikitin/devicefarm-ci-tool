@@ -33,6 +33,7 @@ type RunConfig struct {
 	DevicePoolName         string                               `json:"devicePoolName,omitempty"`
 	TestPackagePath        string                               `json:"testPackagePath,omitempty"`
 	ExtraDataPackagePath   string                               `json:"extraDataPackagePath,omitempty"`
+	AuxiliaryAppsPath      []string                             `json:"auxiliaryAppsPath,omitempty"`
 	Test                   *devicefarm.ScheduleRunTest          `json:"test,omitempty"`
 	Configuration          *devicefarm.ScheduleRunConfiguration `json:"configuration,omitempty"`
 	ExecutionConfiguration *devicefarm.ExecutionConfiguration   `json:"executionConfiguration,omitempty"`
