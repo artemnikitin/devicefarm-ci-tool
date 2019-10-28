@@ -87,19 +87,19 @@ Config example:
       },
       "networkProfileArn": "string",
       "radios": { 
-         "bluetooth": true|false,
-         "gps": true|false,
-         "nfc": true|false,
-         "wifi": true|false
+         "bluetooth": boolean,
+         "gps": boolean,
+         "nfc": boolean,
+         "wifi": boolean
       },
       "vpceConfigurationArns": [ "string", "string" ]
    },
    "executionConfiguration": { 
-      "accountsCleanup": true|false,
-      "appPackagesCleanup": true|false,
+      "accountsCleanup": boolean,
+      "appPackagesCleanup": boolean,
       "jobTimeoutMinutes": 111,
-      "skipAppResign": true|false,
-      "videoCapture": true|false
+      "skipAppResign": boolean,
+      "videoCapture": boolean
    },
    "test": { 
       "filter": "string",
