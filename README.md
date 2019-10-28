@@ -74,6 +74,11 @@ Config example:
    "configuration": { 
       "auxiliaryApps": [ "string" ],
       "billingMethod": "METERED|UNMETERED",
+      "customerArtifactPaths": {
+         "androidPaths": [ "string", "string" ],
+         "deviceHostPaths": [ "string", "string" ],
+         "iosPaths": [ "string", "string" ]
+      },
       "extraDataPackageArn": "string",
       "locale": "string",
       "location": { 
@@ -82,16 +87,19 @@ Config example:
       },
       "networkProfileArn": "string",
       "radios": { 
-         "bluetooth": true,
-         "gps": false,
-         "nfc": true,
-         "wifi": false
-      }
+         "bluetooth": true|false,
+         "gps": true|false,
+         "nfc": true|false,
+         "wifi": true|false
+      },
+      "vpceConfigurationArns": [ "string", "string" ]
    },
    "executionConfiguration": { 
-      "accountsCleanup": false,
-      "appPackagesCleanup": true,
-      "jobTimeoutMinutes": 111
+      "accountsCleanup": true|false,
+      "appPackagesCleanup": true|false,
+      "jobTimeoutMinutes": 111,
+      "skipAppResign": true|false,
+      "videoCapture": true|false
    },
    "test": { 
       "filter": "string",
