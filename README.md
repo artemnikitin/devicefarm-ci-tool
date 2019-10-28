@@ -70,6 +70,7 @@ Config example:
    "devicePoolPath": "string",
    "testPackagePath": "string",
    "extraDataPackagePath": "string",
+   "auxiliaryAppsPath": [ "path/to/app-1", "path/to/app-2" ],
    "configuration": { 
       "auxiliaryApps": [ "string" ],
       "billingMethod": "METERED|UNMETERED",
