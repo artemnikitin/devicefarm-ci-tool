@@ -22,6 +22,20 @@ var m = map[string]string{
 	"APPIUM_WEB_PYTHON":      "APPIUM_WEB_PYTHON_TEST_PACKAGE",
 }
 
+var testSpec = map[string]string{
+	"APPIUM_JAVA_JUNIT":      "APPIUM_JAVA_JUNIT_TEST_SPEC",
+	"APPIUM_JAVA_TESTNG":     "APPIUM_JAVA_TESTNG_TEST_SPEC",
+	"APPIUM_PYTHON":          "APPIUM_NODE_TEST_SPEC",
+	"CALABASH":               "CALABASH_TEST_SPEC",
+	"INSTRUMENTATION":        "INSTRUMENTATION_TEST_SPEC",
+	"UIAUTOMATOR":            "UIAUTOMATOR_TEST_SPEC",
+	"XCTEST":                 "XCTEST_TEST_SPEC",
+	"XCTEST_UI":              "XCTEST_UI_TEST_SPEC",
+	"APPIUM_WEB_JAVA_JUNIT":  "APPIUM_WEB_JAVA_JUNIT_TEST_SPEC",
+	"APPIUM_WEB_JAVA_TESTNG": "APPIUM_WEB_JAVA_TESTNG_TEST_SPEC",
+	"APPIUM_WEB_PYTHON":      "APPIUM_WEB_PYTHON_TEST_SPEC",
+}
+
 // RunConfig contains serialized representation of run model from JSON file
 type RunConfig struct {
 	Name                   string                               `json:"name,omitempty"`
@@ -32,6 +46,7 @@ type RunConfig struct {
 	DevicePoolArn          string                               `json:"devicePoolArn,omitempty"`
 	DevicePoolName         string                               `json:"devicePoolName,omitempty"`
 	TestPackagePath        string                               `json:"testPackagePath,omitempty"`
+	TestSpecPath           string                               `json:"testSpecPath,omitempty"`
 	ExtraDataPackagePath   string                               `json:"extraDataPackagePath,omitempty"`
 	AuxiliaryAppsPath      []string                             `json:"auxiliaryAppsPath,omitempty"`
 	Test                   *devicefarm.ScheduleRunTest          `json:"test,omitempty"`
@@ -50,6 +65,16 @@ func Transform(jsonBytes []byte) *RunConfig {
 // GetUploadTypeForTest return type of upload based on type of test
 func GetUploadTypeForTest(testType string) string {
 	v, exist := m[testType]
+	if !exist {
+		log.Println("Can't determine type of upload for", testType)
+		return ""
+	}
+	return v
+}
+
+// GetUploadTypeForTestSpec return type of upload based on type of test spec
+func GetUploadTypeForTestSpec(testType string) string {
+	v, exist := testSpec[testType]
 	if !exist {
 		log.Println("Can't determine type of upload for", testType)
 		return ""
