@@ -85,6 +85,19 @@ func createScheduleRunInput(p *DeviceFarmRun) *devicefarm.ScheduleRunInput {
 		}
 		result.Configuration.AuxiliaryApps = aws.StringSlice(auxAppARN)
 	}
+	specPath, specPathOK := config.FieldOk("TestSpecPath")
+	if specPathOK && !specPath.IsZero() {
+		v, ok = s.FieldOk("Configuration")
+		if ok && !v.IsZero() {
+			arn, arnOK := v.FieldOk("TestSpecPath")
+			if (arnOK && arn.IsZero()) || !arnOK {
+				uploadTestSpec(p, result, &wg)
+			}
+		} else {
+			result.Configuration = &devicefarm.ScheduleRunConfiguration{}
+			uploadTestSpec(p, result, &wg)
+		}
+	}
 
 	wg.Wait()
 	return result
@@ -130,4 +143,20 @@ func uploadAuxiliaryApps(app string, p *DeviceFarmRun) string {
 	}
 	p.WaitForAppProcessed(arn, 5)
 	return arn
+}
+
+func uploadTestSpec(p *DeviceFarmRun, result *devicefarm.ScheduleRunInput, wg *sync.WaitGroup) {
+	wg.Add(1)
+	go func() {
+		log.Println("Uploading testspec...")
+		t := model.GetUploadTypeForTestSpec(*result.Test.Type)
+		arn, url := p.CreateUploadWithType(p.ProjectArn, p.Config.TestSpecPath, t)
+		httpResponse := tools.UploadFile(p.Config.TestSpecPath, url)
+		if httpResponse != 200 {
+			log.Fatal("Can't upload test app")
+		}
+		p.WaitForAppProcessed(arn, 5)
+		result.Test.TestSpecArn = aws.String(arn)
+		wg.Done()
+	}()
 }
